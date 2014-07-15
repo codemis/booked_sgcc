@@ -1,2 +1,4 @@
 .DS_Store
 config/config.php
+php_error.log
+tpl_c/
