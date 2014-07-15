@@ -1,0 +1,16 @@
+/* Simplified Schedule */
+#simplified-schedule {
+    width: 100%;
+    display: block;
+}
+#simplified-calendar {
+    width: 36%;
+    float: left;
+    margin: 0% 2%;
+}
+#simplified-listing {
+    width: 56%;
+    float: left;
+    margin: 0% 2%;
+    clear: right;    
+}

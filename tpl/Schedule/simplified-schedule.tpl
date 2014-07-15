@@ -18,7 +18,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
 
 {block name="header"}
-    {include file='globalheader.tpl' cssFiles='css/jquery.qtip.min.css,scripts/css/jqtree.css,css/schedule.css'}
+    {include file='globalheader.tpl' cssFiles='css/jquery.qtip.min.css,scripts/css/jqtree.css,css/schedule.css,css/admin.css,css/sgcc-custom.css'}
 {/block}
 
 {if $IsAccessible}
@@ -42,23 +42,49 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
             </div>
         </div>
     {/block}
+    <br><br>
+    <div id="simplified-schedule">
+        <div id="simplified-calendar">CALENDAR
+        </div>
 
-    {block name="reservations"}
-        {foreach from=$BoundDates item=date}
-            {$date}
-                {foreach from=$Resources item=resource name=resource_loop}
-                    {$resource->Name}
-                {/foreach}
-            {flush}
-        {/foreach}
-    {/block}
+        {block name="reservations"}
+            <div id="simplified-listing">
+                <div class="admin">
+                    <div class="title">
+                        Current Events
+                    </div>
+                    <div class="scheduleDetails">
+                        <div style="float:left;">
+                            LEFT TEXT
+                        </div>
+
+                        <div class="layout">
+                            RIGHT TEXT
+                        </div>
+                        <div class="actions">
+                            ACTIONS
+                        </div>
+                    </div>
+                    <div class="scheduleDetails">
+                        <div style="float:left;">
+                            LEFT TEXT
+                        </div>
+
+                        <div class="layout">
+                            RIGHT TEXT
+                        </div>
+                        <div class="actions">
+                            ACTIONS
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {/block}
+        <div class="clear">&nbsp;</div>
+    </div>
 {else}
     <div class="error">{translate key=NoResourcePermission}</div>
 {/if}
-
-{block name="scripts"}
-
-{/block}
 
 {block name="scripts-common"}
     {jsfile src="js/jquery.qtip.min.js"}
@@ -73,6 +99,16 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 
         $(document).ready(function ()
         {
+            var scheduleOpts = {
+                reservationUrlTemplate: "{$Path}{Pages::RESERVATION}?{QueryStringKeys::REFERENCE_NUMBER}=[referenceNumber]",
+                summaryPopupUrl: "{$Path}ajax/respopup.php",
+                setDefaultScheduleUrl: "{$Path}{Pages::PROFILE}?action=changeDefaultSchedule&{QueryStringKeys::SCHEDULE_ID}=[scheduleId]",
+                cookieName: "{$CookieName}",
+                scheduleId:"{$ScheduleId}"
+            };
+
+            var schedule = new Schedule(scheduleOpts, {$ResourceGroupsAsJson});
+            schedule.init();
         });
     </script>
 {/block}
