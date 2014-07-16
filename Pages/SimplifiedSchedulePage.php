@@ -17,16 +17,39 @@
  * You should have received a copy of the GNU General Public License
  * along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
-require_once(ROOT_DIR . 'Pages/SchedulePage.php');
-/**
- * This class allows us to inherit all the functionality of the SchedulePage Class, but overwrite the displaying
- * of that page.  We want a custom view.
- *
- * @package default
- * @author Johnathan Pulos
- **/
-class SimplifiedSchedulePage extends SchedulePage
+
+require_once(ROOT_DIR . 'Pages/SecurePage.php');
+require_once(ROOT_DIR . 'Presenters/SimplifiedSchedulePresenter.php');
+
+interface ISimplifiedSchedulePage extends IActionPage
 {
+
+    /**
+     * @param bool $shouldShow
+     */
+    public function ShowPermissionError($shouldShow);
+
+}
+
+class SimplifiedSchedulePage extends ActionPage implements ISimplifiedSchedulePage
+{
+
+    /**
+     * @var SchedulePresenter
+     */
+    protected $_presenter;
+
+    public function __construct()
+    {
+        parent::__construct('Schedule');
+
+        $permissionServiceFactory = new PermissionServiceFactory();
+        $userRepository = new UserRepository();
+        $resourceService = new ResourceService(new ResourceRepository(), $permissionServiceFactory->GetPermissionService(), new AttributeService(new AttributeRepository()), $userRepository);
+        $reservationService = new ReservationService(new ReservationViewRepository(), new ReservationListingFactory());
+        $this->_presenter = new SimplifiedSchedulePresenter($this, $resourceService, $reservationService);
+    }
+
     public function ProcessPageLoad()
     {
         $start = microtime(true);
@@ -38,9 +61,6 @@ class SimplifiedSchedulePage extends SchedulePage
 
         $endLoad = microtime(true);
 
-        $this->Set('SlotLabelFactory', $user->IsAdmin ? new AdminSlotLabelFactory() : new SlotLabelFactory($user));
-        $this->Set('DisplaySlotFactory', new DisplaySlotFactory());
-
         $this->Display('Schedule/simplified-schedule.tpl');
 
         $endDisplay = microtime(true);
@@ -51,5 +71,27 @@ class SimplifiedSchedulePage extends SchedulePage
         Log::Debug('Schedule took %s sec to load, %s sec to render. Total %s sec', $load, $display, $total);
     }
 
+    public function ProcessDataRequest($dataRequest)
+    {
+        $this->_presenter->GetLayout(ServiceLocator::GetServer()
+                                     ->GetUserSession());
+    }
+
+    public function ProcessAction()
+    {
+        // no-op
+    }
+
+    public function ShowInaccessibleResources()
+    {
+        return Configuration::Instance()
+               ->GetSectionKey(ConfigSection::SCHEDULE,
+                               ConfigKeys::SCHEDULE_SHOW_INACCESSIBLE_RESOURCES,
+                               new BooleanConverter());
+    }
+
+    public function ShowPermissionError($shouldShow)
+    {
+        $this->Set('IsAccessible', !$shouldShow);
+    }
 }
-?>

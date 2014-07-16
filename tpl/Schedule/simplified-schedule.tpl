@@ -65,18 +65,6 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
                             ACTIONS
                         </div>
                     </div>
-                    <div class="scheduleDetails">
-                        <div style="float:left;">
-                            LEFT TEXT
-                        </div>
-
-                        <div class="layout">
-                            RIGHT TEXT
-                        </div>
-                        <div class="actions">
-                            ACTIONS
-                        </div>
-                    </div>
                 </div>
             </div>
         {/block}
