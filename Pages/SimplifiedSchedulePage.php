@@ -19,9 +19,25 @@
  */
 
 require_once(ROOT_DIR . 'Pages/SchedulePage.php');
+require_once(ROOT_DIR . 'Presenters/SimplifiedSchedulePresenter.php');
 
 class SimplifiedSchedulePage extends SchedulePage implements ISchedulePage
 {
+
+    public function __construct()
+    {
+        parent::__construct('Schedule');
+
+        $permissionServiceFactory = new PermissionServiceFactory();
+        $scheduleRepository = new ScheduleRepository();
+        $userRepository = new UserRepository();
+        $resourceService = new ResourceService(new ResourceRepository(), $permissionServiceFactory->GetPermissionService(), new AttributeService(new AttributeRepository()), $userRepository);
+        $pageBuilder = new SchedulePageBuilder();
+        $reservationService = new ReservationService(new ReservationViewRepository(), new ReservationListingFactory());
+        $dailyLayoutFactory = new DailyLayoutFactory();
+        $scheduleService = new ScheduleService($scheduleRepository, $resourceService);
+        $this->_presenter = new SimplifiedSchedulePresenter($this, $scheduleService, $resourceService, $pageBuilder, $reservationService, $dailyLayoutFactory);
+    }
 
     public function ProcessPageLoad()
     {

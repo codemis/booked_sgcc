@@ -17,72 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-require_once(ROOT_DIR . 'lib/Config/namespace.php');
-require_once(ROOT_DIR . 'lib/Application/Authorization/namespace.php');
-require_once(ROOT_DIR . 'lib/Server/namespace.php');
-require_once(ROOT_DIR . 'lib/Common/namespace.php');
-require_once(ROOT_DIR . 'Domain/namespace.php');
-require_once(ROOT_DIR . 'Domain/Access/namespace.php');
-require_once(ROOT_DIR . 'Presenters/SchedulePageBuilder.php');
-require_once(ROOT_DIR . 'Presenters/ActionPresenter.php');
-
-interface ISimplifiedSchedulePresenter {
-
-    public function PageLoad(UserSession $user);
-}
-
-class SimplifiedSchedulePresenter extends ActionPresenter implements ISimplifiedSchedulePresenter {
-
-    /**
-     * @var ISimplifiedSchedulePage
-     */
-    private $_page;
-
-    /**
-     * @var IResourceService
-     */
-    private $_resourceService;
-
-    /**
-     * @var IReservationService
-     */
-    private $_reservationService;
-
-    /**
-     * @param ISchedulePage $page
-     * @param IResourceService $resourceService
-     * @param IReservationService $reservationService
-     * @param IDailyLayoutFactory $dailyLayoutFactory
-     */
-    public function __construct(
-        ISimplifiedSchedulePage $page,
-        IResourceService $resourceService,
-        IReservationService $reservationService
-    )
-    {
-		parent::__construct($page);
-        $this->_page = $page;
-        $this->_resourceService = $resourceService;
-        $this->_reservationService = $reservationService;
-    }
-
-    public function PageLoad(UserSession $user)
-    {
-
-        $showInaccessibleResources = $this->_page->ShowInaccessibleResources();
-
-        $schedules = $this->_scheduleService->GetAll($showInaccessibleResources, $user);
-
-		if (count($schedules) == 0)
-		{
-			$this->_page->ShowPermissionError(true);
-			return;
-		}
-
-		$this->_page->ShowPermissionError(false);
-
-    }
+class SimplifiedSchedulePresenter extends SchedulePresenter implements ISchedulePresenter {
 }
 
 ?>
