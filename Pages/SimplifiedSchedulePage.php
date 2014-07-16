@@ -20,6 +20,7 @@
 
 require_once(ROOT_DIR . 'Pages/SchedulePage.php');
 require_once(ROOT_DIR . 'Presenters/SimplifiedSchedulePresenter.php');
+require_once(ROOT_DIR . 'Presenters/SimplifiedSchedulePageBuilder.php');
 
 class SimplifiedSchedulePage extends SchedulePage implements ISchedulePage
 {
@@ -32,7 +33,7 @@ class SimplifiedSchedulePage extends SchedulePage implements ISchedulePage
         $scheduleRepository = new ScheduleRepository();
         $userRepository = new UserRepository();
         $resourceService = new ResourceService(new ResourceRepository(), $permissionServiceFactory->GetPermissionService(), new AttributeService(new AttributeRepository()), $userRepository);
-        $pageBuilder = new SchedulePageBuilder();
+        $pageBuilder = new SimplifiedSchedulePageBuilder();
         $reservationService = new ReservationService(new ReservationViewRepository(), new ReservationListingFactory());
         $dailyLayoutFactory = new DailyLayoutFactory();
         $scheduleService = new ScheduleService($scheduleRepository, $resourceService);
