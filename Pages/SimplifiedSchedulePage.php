@@ -20,7 +20,7 @@
 
 require_once(ROOT_DIR . 'Pages/SchedulePage.php');
 
-class SimplifiedSchedulePage extends SchedulePage
+class SimplifiedSchedulePage extends SchedulePage implements ISchedulePage
 {
 
     public function ProcessPageLoad()
