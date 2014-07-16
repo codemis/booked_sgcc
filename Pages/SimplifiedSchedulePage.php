@@ -18,37 +18,10 @@
  * along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once(ROOT_DIR . 'Pages/SecurePage.php');
-require_once(ROOT_DIR . 'Presenters/SimplifiedSchedulePresenter.php');
+require_once(ROOT_DIR . 'Pages/SchedulePage.php');
 
-interface ISimplifiedSchedulePage extends IActionPage
+class SimplifiedSchedulePage extends SchedulePage
 {
-
-    /**
-     * @param bool $shouldShow
-     */
-    public function ShowPermissionError($shouldShow);
-
-}
-
-class SimplifiedSchedulePage extends ActionPage implements ISimplifiedSchedulePage
-{
-
-    /**
-     * @var SchedulePresenter
-     */
-    protected $_presenter;
-
-    public function __construct()
-    {
-        parent::__construct('Schedule');
-
-        $permissionServiceFactory = new PermissionServiceFactory();
-        $userRepository = new UserRepository();
-        $resourceService = new ResourceService(new ResourceRepository(), $permissionServiceFactory->GetPermissionService(), new AttributeService(new AttributeRepository()), $userRepository);
-        $reservationService = new ReservationService(new ReservationViewRepository(), new ReservationListingFactory());
-        $this->_presenter = new SimplifiedSchedulePresenter($this, $resourceService, $reservationService);
-    }
 
     public function ProcessPageLoad()
     {
@@ -71,27 +44,4 @@ class SimplifiedSchedulePage extends ActionPage implements ISimplifiedSchedulePa
         Log::Debug('Schedule took %s sec to load, %s sec to render. Total %s sec', $load, $display, $total);
     }
 
-    public function ProcessDataRequest($dataRequest)
-    {
-        $this->_presenter->GetLayout(ServiceLocator::GetServer()
-                                     ->GetUserSession());
-    }
-
-    public function ProcessAction()
-    {
-        // no-op
-    }
-
-    public function ShowInaccessibleResources()
-    {
-        return Configuration::Instance()
-               ->GetSectionKey(ConfigSection::SCHEDULE,
-                               ConfigKeys::SCHEDULE_SHOW_INACCESSIBLE_RESOURCES,
-                               new BooleanConverter());
-    }
-
-    public function ShowPermissionError($shouldShow)
-    {
-        $this->Set('IsAccessible', !$shouldShow);
-    }
 }
