@@ -18,6 +18,11 @@
  * along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
 class SimplifiedSchedulePresenter extends SchedulePresenter implements ISchedulePresenter {
+
+    public function PageLoad(UserSession $user)
+    {
+        parent::PageLoad($user);
+    }
 }
 
 ?>

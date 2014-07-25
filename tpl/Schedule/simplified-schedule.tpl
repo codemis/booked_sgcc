@@ -18,7 +18,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
 
 {block name="header"}
-    {include file='globalheader.tpl' cssFiles='css/jquery.qtip.min.css,scripts/css/jqtree.css,css/schedule.css,css/admin.css,css/sgcc-custom.css'}
+    {include file='globalheader.tpl' cssFiles='css/jquery.qtip.min.css,scripts/css/jqtree.css,css/schedule.css,css/admin.css,custom/css/clndr.css,custom/css/sgcc-custom.css'}
 {/block}
 
 {if $IsAccessible}
@@ -44,7 +44,10 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
     {/block}
     <br><br>
     <div id="simplified-schedule">
+        <div id="target"></div>
+        <a href="/Web/reservation.php?sid=1">Add an Event</a>
         <div id="simplified-calendar">CALENDAR
+            <div id="the-schedule" class="cal1"></div>
         </div>
 
         {block name="reservations"}
@@ -53,17 +56,19 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="title">
                         Current Events
                     </div>
-                    <div class="scheduleDetails">
-                        <div style="float:left;">
-                            LEFT TEXT
-                        </div>
-
-                        <div class="layout">
-                            RIGHT TEXT
-                        </div>
-                        <div class="actions">
-                            ACTIONS
-                        </div>
+                    <div class="scheduleDetails schedule-details-simplified">
+                        <table id="event-listing" width="100%">
+                            <thead>
+                                <th>Event</th>
+                                <th>Action</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>An Event</td>
+                                    <td><a href="">Edit</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -76,12 +81,14 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 
 {block name="scripts-common"}
     {jsfile src="js/jquery.qtip.min.js"}
-    {jsfile src="js/jquery.qtip.min.js"}
-    {jsfile src="js/moment.min.js"}
     {jsfile src="schedule.js"}
     {jsfile src="resourcePopup.js"}
     {jsfile src="js/tree.jquery.js"}
     {jsfile src="js/jquery.cookie.js"}
+    {jsfile src="../custom/js/moment-2.5.1.js"}
+    {jsfile src="../custom/js/underscore.min.js"}
+    {jsfile src="../custom/js/clndr.min.js"}
+    {jsfile src="../custom/js/simplified-schedule.js"}
 
     <script type="text/javascript">
 
@@ -99,6 +106,63 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
             schedule.init();
         });
     </script>
+
+    <script type="text/template" id="template-calendar">
+        <div class='clndr-controls'>
+            <div class='clndr-control-button'>
+                <span class='clndr-previous-button'>previous</span>
+            </div>
+            <div class='month'>
+                <%= month %> <%= year %>
+            </div>
+            <div class='clndr-control-button rightalign'>
+                <span class='clndr-next-button'>next</span>
+            </div>
+        </div>
+        <table class='clndr-table' border='0' cellspacing='0' cellpadding='0'>
+            <thead>
+                <tr class='header-days'>
+                    <% for(var i = 0; i < daysOfTheWeek.length; i++) { %>
+                        <td class='header-day'><%= daysOfTheWeek[i] %></td>
+                    <% } %>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(var i = 0; i < numberOfRows; i++){ %>
+                    <tr>
+                        <% for(var j = 0; j < 7; j++){ %>
+                            <% var d = j + i * 7; %>
+                            <td class='<%= days[d].classes %>'>
+                                <div class='day-contents'>
+                                    <%= days[d].day %>
+                                    <% if( days[d].events.length > 0) { %>
+                                        <div class="">
+                                            <%= days[d].events.length %> 
+                                            <% if( days[d].events.length == 1) { %>
+                                                Event
+                                            <% } else { %>
+                                                Events
+                                            <% } %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </td>
+                        <% } %>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </script>
+    <script type="text/template" id="table-row-events"> 
+        <% for(var i = 0; i < events.length; i++) { %>
+            <tr>
+                <td><%= events[i].title %> (<%= events[i].special_tag %>)</td>
+                <td><a href="">Edit</a></td>
+            </tr>
+        <% } %>
+    </script>
 {/block}
+
+
 
 {include file='globalfooter.tpl'}
