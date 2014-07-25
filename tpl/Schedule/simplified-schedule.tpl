@@ -59,13 +59,17 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
                     <div class="scheduleDetails schedule-details-simplified">
                         <table id="event-listing" width="100%">
                             <thead>
-                                <th>Event</th>
-                                <th>Action</th>
+                                <tr>
+                                    <th>Room</th>
+                                    <th>Time</th>
+                                    <th>Event</th>
+                                    <th>Recurring</th>
+                                    <th>Action</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>An Event</td>
-                                    <td><a href="">Edit</a></td>
+                                    <td colspan="5">Please select a date on the calendar.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -156,7 +160,16 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
     <script type="text/template" id="table-row-events"> 
         <% for(var i = 0; i < events.length; i++) { %>
             <tr>
-                <td><%= events[i].title %> (<%= events[i].special_tag %>)</td>
+                <td><%= events[i].room %></td>
+                <td><%= events[i].startTime %> - <%= events[i].endTime %></td>
+                <td><strong><%= events[i].title %></strong><br><em><%= events[i].description %></em></td>
+                <td>
+                    <% if (events[i].isRecurring) { %>
+                        Yes
+                    <% } else { %>
+                        No
+                    <% } %>
+                </td>
                 <td><a href="">Edit</a></td>
             </tr>
         <% } %>

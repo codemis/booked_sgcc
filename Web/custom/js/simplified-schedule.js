@@ -5,59 +5,61 @@ var authHeaders;
 var authenticated = false;
 var reservations;
 var scheduleId = 1;
-var calendars = {};
+var eventCalendar;
 jQuery(document).ready(function($) {
     setUpCalender('USERNAME', 'PASSWORD');
 });
 function setUpCalender(username, password) {
-    // authenticateUser(username, password, getIntialResources);
-  var thisMonth = moment().format('YYYY-MM');
-
-  var eventArray = [
-    { startDate: thisMonth + '-10', endDate: thisMonth + '-21', title: 'Multi-Day Event', special_tag: 'Boogie Man'},
-    { startDate: thisMonth + '-21', endDate: thisMonth + '-23', title: 'Another Multi-Day Event', special_tag: 'Ice Cream' },
-    { startDate: thisMonth + '-21', title: 'A Single Day Event', special_tag: 'Ice Cream' }
-  ];
-
-  calendars.clndr1 = $('.cal1').clndr({
-    template: $('#template-calendar').html(),
-    events: eventArray,
-    daysOfTheWeek: ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat'],
-    clickEvents: {
-      click: function(target) {
-        console.log(target.events);
-        var template = $("#table-row-events").html();
-        var tpl = _.template(template, {events: target.events});
-        $("table#event-listing").html(tpl);
-      },
-      nextMonth: function() {
-        console.log('next month.');
-      },
-      previousMonth: function() {
-        console.log('previous month.');
-      },
-      onMonthChange: function() {
-        console.log('month changed.');
-      },
-      nextYear: function() {
-        console.log('next year.');
-      },
-      previousYear: function() {
-        console.log('previous year.');
-      },
-      onYearChange: function() {
-        console.log('year changed.');
-      }
-    },
-    multiDayEvents: {
-      startDate: 'startDate',
-      endDate: 'endDate'
-    },
-    showAdjacentMonths: true,
-    adjacentDaysChangeMonth: false
-  });
+    authenticateUser(username, password);
+    eventCalendar = $('.cal1').clndr({
+        template: $('#template-calendar').html(),
+        daysOfTheWeek: ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat'],
+        clickEvents:
+        {
+            click: function(target) {
+                if (target.events.length > 0) {
+                    var template = $("#table-row-events").html();
+                    var tpl = _.template(template, {events: target.events});
+                    $("table#event-listing tbody").html(tpl);
+                } else {
+                    var html = "<tr><td colspan='5'>No events schedule on this day.</td></tr>";
+                    $("table#event-listing tbody").html(html);
+                }
+            },
+            nextMonth: function()
+                {
+                    console.log('next month.');
+                },
+            previousMonth: function()
+                {
+                    console.log('previous month.');
+                },
+            onMonthChange: function()
+                {
+                    console.log('month changed.');
+                },
+            nextYear: function()
+                {
+                    console.log('next year.');
+                },
+            previousYear: function()
+                {
+                    console.log('previous year.');
+                },
+            onYearChange: function()
+                {
+                    console.log('year changed.');
+                }
+        },
+        multiDayEvents: {
+            startDate: 'startDate',
+            endDate: 'endDate'
+        },
+        showAdjacentMonths: false,
+        adjacentDaysChangeMonth: false
+    });
 };
-function authenticateUser(username, password, callback) {
+function authenticateUser(username, password) {
     $.ajax(
     {
         type: "POST",
@@ -71,51 +73,47 @@ function authenticateUser(username, password, callback) {
             userId = data.userId;
             authHeaders = {"X-Booked-SessionToken": data.sessionToken, "X-Booked-UserId": data.userId}
             authenticated = true;
-            callback();
+            /* Get the current month's start and end dates and times */
+            var startDateTime = moment().startOf('month').toISOString();
+            var endDateTime = moment().endOf('month').toISOString();
+            getResources(startDateTime, endDateTime);
         } else {
             alert(data.message);
         }
     });
 };
-function getIntialResources() {
+function getResources(startDateTime, endDateTime) {
+    url = baseUrl+"Reservations/?scheduleId="+scheduleId+"&startDateTime="+encodeURIComponent(startDateTime)+"&endDateTime="+encodeURIComponent(endDateTime);
     $.ajax(
         {
             type: "GET",
-            url: baseUrl + "Reservations",
+            url: url,
             headers: authHeaders,
-            dataType: "json",
-            data: {scheduleId: scheduleId}
+            dataType: "json"
         })
         .done(function (data) {
             reservations = [];
             $.each(data.reservations, function (idx, val) {
+                var newEvent = {
+                    startDateMoment: moment(val.startDate, "YYYY-MM-DD"),
+                    endDateMoment: moment(val.endDate, "YYYY-MM-DD"),
+                    startDate: moment(val.startDate).format("YYYY-MM-DD"),
+                    endDate: moment(val.endDate).format("YYYY-MM-DD"),
+                    startTime: moment(val.startDate).format("hh:mm a"),
+                    endTime: moment(val.endDate).format("hh:mm a"),
+                    duration: val.duration,
+                    description: val.description,
+                    creatorFirstName: val.firstName,
+                    creatorLastName: val.lastName,
+                    isRecurring: val.isRecurring,
+                    room: val.resourceName,
+                    title: val.title,
+                };
+                reservations.push(newEvent);
             });
-        });       
-};
-function getUniqueDateTimeId(dateTime) {
-    var date = new Date(dateTime);
-    var components = [
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        date.getHours(),
-        date.getMinutes(),
-        date.getSeconds(),
-        date.getMilliseconds()
-    ];
-
-    return components.join("_");
-};
-function getAllDaysStartEndAndInBetween(start, end) {
-    var startDate = new Date(start);
-    var endDate = new Date(end);
-    var allDates = [];
-    while(startDate < endDate) {
-        allDates.push(new Date(startDate));
-        startDate = new Date(startDate.setDate(
-            startDate.getDate() + 1
-        ));
-    }
-    allDates.push(new Date(endDate));
-    return allDates;
+            eventCalendar.setEvents(reservations);
+        }).error(function(e) {
+            /* Act on the event */
+            console.log(e.message);
+        });   
 };
