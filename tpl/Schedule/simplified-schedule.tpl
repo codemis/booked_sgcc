@@ -108,6 +108,8 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 
             var schedule = new Schedule(scheduleOpts, {$ResourceGroupsAsJson});
             schedule.init();
+            scheduleId = {$ScheduleId};
+            setUpCalender({$APIHeader});
         });
     </script>
 

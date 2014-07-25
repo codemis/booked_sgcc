@@ -1,16 +1,10 @@
 var baseUrl = "/Web/Services/";
-var token = "";
-var iserId = "";
 var authHeaders;
-var authenticated = false;
 var reservations;
-var scheduleId = 1;
+var scheduleId = 0;
 var eventCalendar;
-jQuery(document).ready(function($) {
-    setUpCalender('USERNAME', 'PASSWORD');
-});
-function setUpCalender(username, password) {
-    authenticateUser(username, password);
+function setUpCalender(APIHeaders) {
+    authHeaders = APIHeaders;
     eventCalendar = $('.cal1').clndr({
         template: $('#template-calendar').html(),
         daysOfTheWeek: ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat'],
@@ -58,29 +52,9 @@ function setUpCalender(username, password) {
         showAdjacentMonths: false,
         adjacentDaysChangeMonth: false
     });
-};
-function authenticateUser(username, password) {
-    $.ajax(
-    {
-        type: "POST",
-        url: baseUrl + "Authentication/Authenticate",
-        data: JSON.stringify({username: username, password: password}),
-        dataType: "json"
-    })
-    .done(function (data) {
-        if (data.isAuthenticated) {
-            token = data.sessionToken;
-            userId = data.userId;
-            authHeaders = {"X-Booked-SessionToken": data.sessionToken, "X-Booked-UserId": data.userId}
-            authenticated = true;
-            /* Get the current month's start and end dates and times */
-            var startDateTime = moment().startOf('month').toISOString();
-            var endDateTime = moment().endOf('month').toISOString();
-            getResources(startDateTime, endDateTime);
-        } else {
-            alert(data.message);
-        }
-    });
+    var startDateTime = moment().startOf('month').toISOString();
+    var endDateTime = moment().endOf('month').toISOString();
+    getResources(startDateTime, endDateTime);
 };
 function getResources(startDateTime, endDateTime) {
     url = baseUrl+"Reservations/?scheduleId="+scheduleId+"&startDateTime="+encodeURIComponent(startDateTime)+"&endDateTime="+encodeURIComponent(endDateTime);
