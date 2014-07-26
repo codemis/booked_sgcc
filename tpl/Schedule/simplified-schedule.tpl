@@ -46,7 +46,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
     <div id="simplified-schedule">
         <div id="target"></div>
         <a href="/Web/reservation.php?sid=1">Add an Event</a>
-        <div id="simplified-calendar">CALENDAR
+        <div id="simplified-calendar">
             <div id="the-schedule" class="cal1"></div>
         </div>
 
@@ -116,13 +116,13 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
     <script type="text/template" id="template-calendar">
         <div class='clndr-controls'>
             <div class='clndr-control-button'>
-                <span class='clndr-previous-button'>previous</span>
+                <span class='clndr-previous-button'>&laquo; previous</span>
             </div>
             <div class='month'>
                 <%= month %> <%= year %>
             </div>
             <div class='clndr-control-button rightalign'>
-                <span class='clndr-next-button'>next</span>
+                <span class='clndr-next-button'>next &raquo;</span>
             </div>
         </div>
         <table class='clndr-table' border='0' cellspacing='0' cellpadding='0'>
@@ -142,7 +142,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
                                 <div class='day-contents'>
                                     <%= days[d].day %>
                                     <% if( days[d].events.length > 0) { %>
-                                        <div class="">
+                                        <div class="total-events">
                                             <%= days[d].events.length %> 
                                             <% if( days[d].events.length == 1) { %>
                                                 Event
