@@ -11,6 +11,7 @@ function setUpCalender(APIHeaders) {
         clickEvents:
         {
             click: function(target) {
+                $('#simplified-listing').find('div.title:first').text("Events for "+moment(target.date).format("dddd, MMMM Do YYYY"));
                 if (target.events.length > 0) {
                     var template = $("#table-row-events").html();
                     var tpl = _.template(template, {events: target.events});
@@ -20,30 +21,15 @@ function setUpCalender(APIHeaders) {
                     $("table#event-listing tbody").html(html);
                 }
             },
-            nextMonth: function()
+            onMonthChange: function(month)
                 {
-                    console.log('next month.');
-                },
-            previousMonth: function()
-                {
-                    console.log('previous month.');
-                },
-            onMonthChange: function()
-                {
-                    console.log('month changed.');
-                },
-            nextYear: function()
-                {
-                    console.log('next year.');
-                },
-            previousYear: function()
-                {
-                    console.log('previous year.');
-                },
-            onYearChange: function()
-                {
-                    console.log('year changed.');
+                    var startDateTime = month.startOf('month').toISOString();
+                    var endDateTime = month.endOf('month').toISOString();
+                    getResources(startDateTime, endDateTime);
                 }
+        },
+        doneRendering: function() {
+            $('td.today').trigger('click');
         },
         multiDayEvents: {
             startDate: 'startDate',
