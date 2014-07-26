@@ -17,3 +17,10 @@
 .schedule-details-simplified {
     width: 100%;
 }
+@media screen and (max-width: 800px) {
+    #simplified-calendar, #simplified-listing {
+        width: 100%;
+        float: none;
+        margin: 0%;
+    }
+}
