@@ -18,7 +18,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
 
 {block name="header"}
-    {include file='globalheader.tpl' cssFiles='css/jquery.qtip.min.css,scripts/css/jqtree.css,css/schedule.css,css/admin.css,custom/css/clndr.css,custom/css/theme.ice.css,custom/css/sgcc-custom.css'}
+    {include file='globalheader.tpl' cssFiles='css/jquery.qtip.min.css,scripts/css/jqtree.css,css/schedule.css,css/admin.css,custom/css/clndr.css,custom/css/theme.ice.css,custom/css/sgcc-custom.css' printCssFiles='custom/css/sgcc-custom.print.css'}
 {/block}
 
 {if $IsAccessible}
@@ -51,7 +51,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 
         {block name="reservations"}
             <div id="simplified-listing">
-                <div class="admin margin-bottom">
+                <div class="admin margin-bottom hide-print">
                     <div class="title">
                         Add an Event
                     </div>
@@ -186,7 +186,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
                 <td><%= events[i].endTime %></td>
                 <td><%= events[i].title %></td>
                 <td rowspan="2">
-                    <form method="GET" action="/Web/reservation.php">
+                    <form method="GET" action="/Web/reservation.php" class="hide-print">
                         <input type="hidden" name="rn" value="<%= events[i].referenceNumber %>">
                         <button type="submit" class="button save">Edit</button>
                     </form>
