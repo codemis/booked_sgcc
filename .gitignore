@@ -1,2 +1,5 @@
 .DS_Store
 config/config.php
+config/APIConfig.php
+php_error.log
+tpl_c/

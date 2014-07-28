@@ -1,0 +1,45 @@
+/* Simplified Schedule */
+#simplified-schedule {
+    width: 100%;
+    display: block;
+}
+#simplified-calendar {
+    width: 56%;
+    float: left;
+    margin: 0% 2%;
+}
+#simplified-listing {
+    width: 36%;
+    float: left;
+    margin: 0% 2%;
+    clear: right;    
+}
+.schedule-details-simplified {
+    width: 100%;
+}
+.margin-bottom {
+    margin-bottom: 20px;
+}
+div.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+input.form-control {
+    display: block;
+    width: 98%;
+    height: 20px;
+    margin-bottom: 5px;
+}
+.ui-autocomplete { 
+    height: 200px; 
+    overflow-y: scroll; 
+    overflow-x: hidden;
+}
+@media screen and (max-width: 800px) {
+    #simplified-calendar, #simplified-listing {
+        width: 100%;
+        float: none;
+        margin: 0%;
+    }
+}
