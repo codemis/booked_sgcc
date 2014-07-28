@@ -106,6 +106,7 @@ function getReservations(startDateTime, endDateTime) {
         .done(function (data) {
             reservations = [];
             $.each(data.reservations, function (idx, val) {
+                console.log(val);
                 var newEvent = {
                     startDateMoment: moment(val.startDate, "YYYY-MM-DD"),
                     endDateMoment: moment(val.endDate, "YYYY-MM-DD"),
@@ -117,7 +118,6 @@ function getReservations(startDateTime, endDateTime) {
                     description: val.description,
                     creatorFirstName: val.firstName,
                     creatorLastName: val.lastName,
-                    isRecurring: val.isRecurring,
                     room: val.resourceName,
                     title: val.title,
                 };

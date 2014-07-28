@@ -78,7 +78,6 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
                                     <th>Room</th>
                                     <th>Time</th>
                                     <th>Event</th>
-                                    <th>Recurring</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -182,13 +181,6 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
                 <td><%= events[i].room %></td>
                 <td><%= events[i].startTime %> - <%= events[i].endTime %></td>
                 <td><strong><%= events[i].title %></strong><br><em><%= events[i].description %></em></td>
-                <td>
-                    <% if (events[i].isRecurring) { %>
-                        Yes
-                    <% } else { %>
-                        No
-                    <% } %>
-                </td>
                 <td><a href="">Edit</a></td>
             </tr>
         <% } %>
