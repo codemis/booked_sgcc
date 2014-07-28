@@ -10,7 +10,7 @@ function setUpCalender() {
         clickEvents:
         {
             click: function(target) {
-                $('#simplified-listing').find('div.title:first').text("Events for "+moment(target.date).format("dddd, MMMM Do YYYY"));
+                $('#simplified-listing').find('div.title').eq(1).text("Events for "+moment(target.date).format("dddd, MMMM Do YYYY"));
                 if (target.events.length > 0) {
                     var template = $("#table-row-events").html();
                     var tpl = _.template(template, {events: target.events});
@@ -43,6 +43,39 @@ function setUpCalender() {
 };
 function setUpAddEventForm() {
     /* We need to setup the autocomplete */
+    $('#autocomplete-resources').click(function(event) {
+        $(this).val('');
+        $('#autocomplete-resources').autocomplete("search", "");
+        return true;
+    });
+    url = baseUrl+"Resources/?scheduleId="+scheduleId;
+    $.ajax(
+        {
+            type: "GET",
+            url: url,
+            headers: authHeaders,
+            dataType: "json"
+        })
+        .done(function (data) {
+            var tags = [];
+            $.each(data.resources, function(index, val) {
+                tags.push({value: val.resourceId, label: val.name});
+            });
+            $('#autocomplete-resources').autocomplete({
+                source: tags,
+                minLength: 0,
+                select: function(event, ui) {
+                    var selectedObj = ui.item;
+                    $('#autocomplete-resources').val(selectedObj.label);
+                    $('#selected-resource-id').val(selectedObj.value);
+                    event.preventDefault();
+                }
+            });
+        }).error(function(e) {
+            /* Act on the event */
+            console.log(e.message);
+        }
+    );
 };
 function getReservations(startDateTime, endDateTime) {
     url = baseUrl+"Reservations/?scheduleId="+scheduleId+"&startDateTime="+encodeURIComponent(startDateTime)+"&endDateTime="+encodeURIComponent(endDateTime);

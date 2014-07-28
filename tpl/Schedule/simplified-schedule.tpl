@@ -45,13 +45,28 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
     <br><br>
     <div id="simplified-schedule">
         <div id="target"></div>
-        <a href="/Web/reservation.php?sid=1">Add an Event</a>
         <div id="simplified-calendar">
             <div id="the-schedule" class="cal1"></div>
         </div>
 
         {block name="reservations"}
             <div id="simplified-listing">
+                <div class="admin margin-bottom">
+                    <div class="title">
+                        Add an Event
+                    </div>
+                    <div class="scheduleDetails schedule-details-simplified">
+                        <form method="GET" action="/Web/reservation.php" id="add-event-form">
+                            <div class="form-group">
+                                <label for="autocomplete-resources">Resource to Schedule:</label>
+                                <input type="text" class="form-control" id="autocomplete-resources">
+                                <input type="hidden" id="selected-resource-id" name="rid">
+                                <input type="hidden" name="sid" value="{$ScheduleId}">
+                            </div>
+                            <button type="submit" class="button save">Submit</button>
+                        </form>
+                    </div>
+                </div>
                 <div class="admin">
                     <div class="title">
                         Current Events

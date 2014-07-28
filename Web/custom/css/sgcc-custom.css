@@ -17,6 +17,25 @@
 .schedule-details-simplified {
     width: 100%;
 }
+.margin-bottom {
+    margin-bottom: 20px;
+}
+div.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+input.form-control {
+    display: block;
+    width: 90%;
+    height: 20px;
+    margin-bottom: 5px;
+}
+.ui-autocomplete { 
+    height: 200px; 
+    overflow-y: scroll; 
+    overflow-x: hidden;
+}
 @media screen and (max-width: 800px) {
     #simplified-calendar, #simplified-listing {
         width: 100%;
