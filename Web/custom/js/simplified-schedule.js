@@ -3,6 +3,10 @@ var authHeaders;
 var reservations;
 var scheduleId = 0;
 var eventCalendar;
+/**
+ * Sets up the eventCalendar calendar using JQuery CLNDR
+ * @return void
+ */
 function setUpCalender() {
     eventCalendar = $('.cal1').clndr({
         template: $('#template-calendar').html(),
@@ -41,6 +45,11 @@ function setUpCalender() {
     var endDateTime = moment().endOf('month').toISOString();
     getReservations(startDateTime, endDateTime);
 };
+/**
+ * Sets up the autocomplete for the Add Event form with the Resources from the Booked API
+ *
+ * @return void
+ */
 function setUpAddEventForm() {
     /* We need to setup the autocomplete */
     $('#autocomplete-resources').click(function(event) {
@@ -77,6 +86,14 @@ function setUpAddEventForm() {
         }
     );
 };
+/**
+ * Get the Reservations for the given dates.  Uses an AJAX request to grab the data from the API, and fills up the eventCalendar calendar.
+ * Depends on the var eventCalendar to be a JQuery CLNDR object
+ *
+ * @param String startDateTime the start datetime in ISO
+ * @param String endDateTime the end datetime in ISO
+ * @return void
+ */
 function getReservations(startDateTime, endDateTime) {
     url = baseUrl+"Reservations/?scheduleId="+scheduleId+"&startDateTime="+encodeURIComponent(startDateTime)+"&endDateTime="+encodeURIComponent(endDateTime);
     $.ajax(
