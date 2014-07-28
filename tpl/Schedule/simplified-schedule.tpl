@@ -181,10 +181,10 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
     <script type="text/template" id="table-row-events"> 
         <% for(var i = 0; i < events.length; i++) { %>
             <tr>
-                <td rowspan="2"><%= events[i].room %></td>
+                <td rowspan="2"><strong><%= events[i].room %></strong></td>
                 <td><%= events[i].startTime %></td>
                 <td><%= events[i].endTime %></td>
-                <td><strong><%= events[i].title %></strong></td>
+                <td><%= events[i].title %></td>
                 <td rowspan="2">
                     <form method="GET" action="/Web/reservation.php">
                         <input type="hidden" name="rn" value="<%= events[i].referenceNumber %>">
