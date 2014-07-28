@@ -3,8 +3,7 @@ var authHeaders;
 var reservations;
 var scheduleId = 0;
 var eventCalendar;
-function setUpCalender(APIHeaders) {
-    authHeaders = APIHeaders;
+function setUpCalender() {
     eventCalendar = $('.cal1').clndr({
         template: $('#template-calendar').html(),
         daysOfTheWeek: ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat'],
@@ -25,7 +24,7 @@ function setUpCalender(APIHeaders) {
                 {
                     var startDateTime = month.startOf('month').toISOString();
                     var endDateTime = month.endOf('month').toISOString();
-                    getResources(startDateTime, endDateTime);
+                    getReservations(startDateTime, endDateTime);
                 }
         },
         doneRendering: function() {
@@ -40,9 +39,12 @@ function setUpCalender(APIHeaders) {
     });
     var startDateTime = moment().startOf('month').toISOString();
     var endDateTime = moment().endOf('month').toISOString();
-    getResources(startDateTime, endDateTime);
+    getReservations(startDateTime, endDateTime);
 };
-function getResources(startDateTime, endDateTime) {
+function setUpAddEventForm() {
+    /* We need to setup the autocomplete */
+};
+function getReservations(startDateTime, endDateTime) {
     url = baseUrl+"Reservations/?scheduleId="+scheduleId+"&startDateTime="+encodeURIComponent(startDateTime)+"&endDateTime="+encodeURIComponent(endDateTime);
     $.ajax(
         {
