@@ -18,7 +18,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
 
 {block name="header"}
-    {include file='globalheader.tpl' cssFiles='css/jquery.qtip.min.css,scripts/css/jqtree.css,css/schedule.css,css/admin.css,custom/css/clndr.css,custom/css/sgcc-custom.css'}
+    {include file='globalheader.tpl' cssFiles='css/jquery.qtip.min.css,scripts/css/jqtree.css,css/schedule.css,css/admin.css,custom/css/clndr.css,custom/css/theme.ice.css,custom/css/sgcc-custom.css'}
 {/block}
 
 {if $IsAccessible}
@@ -72,13 +72,14 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
                         Current Events
                     </div>
                     <div class="scheduleDetails schedule-details-simplified">
-                        <table id="event-listing" width="100%">
+                        <table id="event-listing" class="tablesorter">
                             <thead>
                                 <tr>
                                     <th>Room</th>
-                                    <th>Time</th>
+                                    <th>Start</th>
+                                    <th>End</th>
                                     <th>Event</th>
-                                    <th>Action</th>
+                                    <th data-sorter="false">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -106,6 +107,8 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
     {jsfile src="../custom/js/moment-2.5.1.js"}
     {jsfile src="../custom/js/underscore.min.js"}
     {jsfile src="../custom/js/clndr.min.js"}
+    {jsfile src="../custom/js/jquery.tablesorter.min.js"}
+    {jsfile src="../custom/js/jquery.tablesorter.widgets.min.js"}
     {jsfile src="../custom/js/simplified-schedule.js"}
 
     <script type="text/javascript">
@@ -178,15 +181,19 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
     <script type="text/template" id="table-row-events"> 
         <% for(var i = 0; i < events.length; i++) { %>
             <tr>
-                <td><%= events[i].room %></td>
-                <td><%= events[i].startTime %> - <%= events[i].endTime %></td>
-                <td><strong><%= events[i].title %></strong><br><em><%= events[i].description %></em></td>
-                <td>
+                <td rowspan="2"><%= events[i].room %></td>
+                <td><%= events[i].startTime %></td>
+                <td><%= events[i].endTime %></td>
+                <td><strong><%= events[i].title %></strong></td>
+                <td rowspan="2">
                     <form method="GET" action="/Web/reservation.php">
                         <input type="hidden" name="rn" value="<%= events[i].referenceNumber %>">
                         <button type="submit" class="button save">Edit</button>
                     </form>
                 </td>
+            </tr>
+            <tr class="expand-child">
+                <td colspan="3"><strong>Desc.</strong>: <em><%= events[i].description %></em></td>
             </tr>
         <% } %>
     </script>

@@ -8,6 +8,16 @@ var eventCalendar;
  * @return void
  */
 function setUpCalender() {
+    $("table.tablesorter").tablesorter(
+        {
+            theme: 'ice',
+            widgets: ["zebra"],
+            cssChildRow: "expand-child",
+            widgetOptions : {
+                zebra : ["odd", "even"]
+            }
+        }
+    );
     eventCalendar = $('.cal1').clndr({
         template: $('#template-calendar').html(),
         daysOfTheWeek: ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat'],
@@ -23,6 +33,7 @@ function setUpCalender() {
                     var html = "<tr><td colspan='5'>No events schedule on this day.</td></tr>";
                     $("table#event-listing tbody").html(html);
                 }
+                $("table.tablesorter").trigger("update").trigger('sortReset');
             },
             onMonthChange: function(month)
                 {
@@ -106,7 +117,6 @@ function getReservations(startDateTime, endDateTime) {
         .done(function (data) {
             reservations = [];
             $.each(data.reservations, function (idx, val) {
-                console.log(val);
                 var newEvent = {
                     startDateMoment: moment(val.startDate, "YYYY-MM-DD"),
                     endDateMoment: moment(val.endDate, "YYYY-MM-DD"),
