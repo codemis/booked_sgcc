@@ -1,0 +1,3 @@
+Redirect 301 /Web/schedule.php http://calendar.sangabrielchristian.org/Web/simplified-schedule.php
+Redirect 301 /Web/my-calendar.php http://calendar.sangabrielchristian.org/Web/simplified-schedule.php
+Redirect 301 /Web/calendar.php http://calendar.sangabrielchristian.org/Web/simplified-schedule.php
