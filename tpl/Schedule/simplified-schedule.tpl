@@ -181,7 +181,12 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
                 <td><%= events[i].room %></td>
                 <td><%= events[i].startTime %> - <%= events[i].endTime %></td>
                 <td><strong><%= events[i].title %></strong><br><em><%= events[i].description %></em></td>
-                <td><a href="">Edit</a></td>
+                <td>
+                    <form method="GET" action="/Web/reservation.php">
+                        <input type="hidden" name="rn" value="<%= events[i].referenceNumber %>">
+                        <button type="submit" class="button save">Edit</button>
+                    </form>
+                </td>
             </tr>
         <% } %>
     </script>

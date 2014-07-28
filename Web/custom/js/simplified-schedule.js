@@ -120,6 +120,7 @@ function getReservations(startDateTime, endDateTime) {
                     creatorLastName: val.lastName,
                     room: val.resourceName,
                     title: val.title,
+                    referenceNumber: val.referenceNumber
                 };
                 reservations.push(newEvent);
             });
