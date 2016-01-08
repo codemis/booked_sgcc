@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -17,6 +17,10 @@ You should have received a copy of the GNU General Public License
 along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
 {include file='globalheader.tpl' cssFiles='scripts/css/colorbox.css'}
+
+{if $PageLoadException}
+	<div class="error">There was an error loading this page. Please double check that the Booked database is created and configured properly.</div>
+{/if}
 
 <div class="validationSummary error" id="validationErrors">
 	<ul>
@@ -40,95 +44,105 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 <div id="registrationbox">
 	<form class="register" method="post" ajaxAction="{RegisterActions::Register}" id="frmRegister"
 		  action="{$smarty.server.SCRIPT_NAME}">
-		<div class="registrationHeader"><h3>{translate key=Login} ({translate key=AllFieldsAreRequired})</h3></div>
-		<p>
-			<label class="reg">{translate key="Username"}<br/>
-			{textbox name="LOGIN" class="input" value="Login" size="20"}
-			</label>
-		</p>
 
-		<p>
-			<label class="reg">{translate key="Password"}<br/>
-			{textbox type="password" name="PASSWORD" class="input" value="" size="20"}
-			</label>
-		</p>
+		<div id="registerLoginFields">
+			<div class="registrationHeader"><h3>{translate key=Login} ({translate key=AllFieldsAreRequired})</h3></div>
+			<p>
+				<label class="reg">{translate key="Username"}<br/>
+				{textbox name="LOGIN" class="input" value="Login" size="20"}
+				</label>
+			</p>
 
-		<p>
-			<label class="reg">{translate key="PasswordConfirmation"}<br/>
-			{textbox type="password" name="PASSWORD_CONFIRM" class="input" value="" size="20"}
-			</label>
-		</p>
+			<p>
+				<label class="reg">{translate key="Password"}<br/>
+				{textbox type="password" name="PASSWORD" class="input" value="" size="20"}
+				</label>
+			</p>
 
-		<p>
-			<label class="reg">{translate key="DefaultPage"}<br/>
-				<select {formname key='DEFAULT_HOMEPAGE'} class="input">
-				{html_options values=$HomepageValues output=$HomepageOutput selected=$Homepage}
-				</select>
-			</label>
-		</p>
+			<p>
+				<label class="reg">{translate key="PasswordConfirmation"}<br/>
+				{textbox type="password" name="PASSWORD_CONFIRM" class="input" value="" size="20"}
+				</label>
+			</p>
 
-		<div class="registrationHeader"><h3>{translate key=Profile} ({translate key=AllFieldsAreRequired})</h3></div>
-		<p>
-			<label class="reg">{translate key="FirstName"}<br/>
-			{textbox name="FIRST_NAME" class="input" value="FirstName" size="20"}
-			</label>
-		</p>
-
-		<p>
-			<label class="reg">{translate key="LastName"}<br/>
-			{textbox name="LAST_NAME" class="input" value="LastName" size="20"}
-			</label>
-		</p>
-
-		<p>
-			<label class="reg">{translate key="Email"}<br/>
-			{textbox name="EMAIL" class="input" value="Email" size="20"}
-			</label>
-		</p>
-
-		<p>
-			<label class="reg">{translate key="Timezone"}<br/>
-				<select {formname key='TIMEZONE'} class="input" id="timezoneDropDown">
-				{html_options values=$TimezoneValues output=$TimezoneOutput selected=$Timezone}
-				</select>
-			</label>
-		</p>
-
-		<p style="display:none">
-			<label class="reg">{translate key="Language"}<br/>
-				<select {formname key='LANGUAGE'} class="input">
-				{html_options values=$LanguageValues output=$LanguageOutput selected=$Language}
-				</select>
-			</label>
-		</p>
-
-		<div class="registrationHeader"><h3>{translate key="AdditionalInformation"} ({translate key=Optional})</h3>
+			<p>
+				<label class="reg">{translate key="DefaultPage"}<br/>
+					<select {formname key='DEFAULT_HOMEPAGE'} class="input">
+					{html_options values=$HomepageValues output=$HomepageOutput selected=$Homepage}
+					</select>
+				</label>
+			</p>
 		</div>
-		<p>
-			<label class="reg">{translate key="Phone"}<br/>
-			{textbox name="PHONE" class="input" value="Phone" size="20"}
-			</label>
-		</p>
 
-		<p>
-			<label class="reg">{translate key="Organization"}<br/>
-			{textbox name="ORGANIZATION" class="input" value="Organization" size="20"}
-			</label>
-		</p>
+		<div id="registerProfileFields">
+			<div class="registrationHeader"><h3>{translate key=Profile} ({translate key=AllFieldsAreRequired})</h3></div>
+			<p>
+				<label class="reg">{translate key="FirstName"}<br/>
+				{textbox name="FIRST_NAME" class="input" value="FirstName" size="20"}
+				</label>
+			</p>
 
-		<p>
-			<label class="reg">{translate key="Position"}<br/>
-			{textbox name="POSITION" class="input" value="Position" size="20"}
-			</label>
-		</p>
+			<p>
+				<label class="reg">{translate key="LastName"}<br/>
+				{textbox name="LAST_NAME" class="input" value="LastName" size="20"}
+				</label>
+			</p>
+
+			<p>
+				<label class="reg">{translate key="Email"}<br/>
+				{textbox name="EMAIL" class="input" value="Email" size="20"}
+				</label>
+			</p>
+
+			<p>
+				<label class="reg">{translate key="Timezone"}<br/>
+					<select {formname key='TIMEZONE'} class="input" id="timezoneDropDown">
+					{html_options values=$TimezoneValues output=$TimezoneOutput selected=$Timezone}
+					</select>
+				</label>
+			</p>
+
+			<p style="display:none">
+				<label class="reg">{translate key="Language"}<br/>
+					<select {formname key='LANGUAGE'} class="input">
+					{html_options values=$LanguageValues output=$LanguageOutput selected=$Language}
+					</select>
+				</label>
+			</p>
+
+		</div>
+
+		<div id="registerAdditionalFields">
+			<div class="registrationHeader"><h3>{translate key="AdditionalInformation"} ({translate key=Optional})</h3>
+			</div>
+			<p>
+				<label class="reg">{translate key="Phone"}<br/>
+				{textbox name="PHONE" class="input" value="Phone" size="20"}
+				</label>
+			</p>
+
+			<p>
+				<label class="reg">{translate key="Organization"}<br/>
+				{textbox name="ORGANIZATION" class="input" value="Organization" size="20"}
+				</label>
+			</p>
+
+			<p>
+				<label class="reg">{translate key="Position"}<br/>
+				{textbox name="POSITION" class="input" value="Position" size="20"}
+				</label>
+			</p>
+		</div>
 
 	{if $Attributes|count > 0}
-		<div class="registrationHeader"><h3>{translate key=AdditionalAttributes}</h3></div>
-		{foreach from=$Attributes item=attribute}
-			<p class="customAttribute">
-				{control type="AttributeControl" attribute=$attribute}
-			</p>
-		{/foreach}
+		<div id="registerAttributeFields">
+			<div class="registrationHeader"><h3>{translate key=AdditionalAttributes}</h3></div>
+			{foreach from=$Attributes item=attribute}
+				<p class="customAttribute">
+					{control type="AttributeControl" attribute=$attribute}
+				</p>
+			{/foreach}
+		</div>
 	{/if}
 
 	{if $EnableCaptcha}

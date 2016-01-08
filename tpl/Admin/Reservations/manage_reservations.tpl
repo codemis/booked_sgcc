@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -19,7 +19,9 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 
 {include file='globalheader.tpl' cssFiles='scripts/css/colorbox.css,css/admin.css,css/jquery.qtip.min.css'}
 
-<h1>{translate key=ManageReservations}</h1>
+<div id="{$PageId}">
+
+<h1>{translate key=ManageReservations} {html_image src="question-button.png" id="help-prompt" ref="help-reservations"}</h1>
 
 <div class="filterTable horizontal-list label-top main-div-shadow" id="filterTable">
 	<form id="filterForm">
@@ -81,7 +83,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 			</li>
 			{foreach from=$AttributeFilters item=attribute}
 				<li class="customAttribute filter-customAttribute{$attribute->Id()}">
-					{control type="AttributeControl" attribute=$attribute searchmode=true}
+					{control type="AttributeControl" attribute=$attribute searchmode=true idPrefix="search"}
 				</li>
 			{/foreach}
 		</ul>
@@ -165,8 +167,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 			<td>{formatdate date=$reservation->ModifiedDate timezone=$Timezone key=general_datetime}</td>
 			<td class="referenceNumber">{$reservation->ReferenceNumber}</td>
 			{foreach from=$ReservationAttributes item=attribute}
-				<td class="update inlineUpdate updateCustomAttribute" attributeId="{$attribute->Id()}"
-					attributeType="{$attribute->Type()}">
+				<td class="update inlineUpdate updateCustomAttribute" attributeId="{$attribute->Id()}" attributeType="{$attribute->Type()}">
 					{assign var=attrVal value=$reservation->Attributes->Get($attribute->Id())}
 					{if $attribute->Type() == CustomAttributeTypes::CHECKBOX}
 						{if $attrVal == 1}
@@ -174,6 +175,8 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 						{else}
 							{translate key=No}
 						{/if}
+					{elseif $attribute->Type() == CustomAttributeTypes::DATETIME}
+						{formatdate date=$attrVal key=general_datetime}
 					{else}
 						{$attrVal}
 					{/if}
@@ -211,15 +214,15 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		<div class="error" style="margin-bottom: 25px;">
 			<h3>{translate key=DeleteWarning}</h3>
 		</div>
-		<button type="button" class="button saveSeries btnUpdateThisInstance">
+		<button type="button" id="btnUpdateThisInstance" class="button saveSeries btnUpdateThisInstance">
 			{html_image src="disk-black.png"}
 			{translate key='ThisInstance'}
 		</button>
-		<button type="button" class="button saveSeries btnUpdateAllInstances">
+		<button type="button" id="btnUpdateAllInstances" class="button saveSeries btnUpdateAllInstances">
 			{html_image src="disks-black.png"}
 			{translate key='AllInstances'}
 		</button>
-		<button type="button" class="button saveSeries btnUpdateFutureInstances">
+		<button type="button" id="btnUpdateFutureInstances" class="button saveSeries btnUpdateFutureInstances">
 			{html_image src="disk-arrow.png"}
 			{translate key='FutureInstances'}
 		</button>
@@ -287,6 +290,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 	</div>
 </div>
 
+{csrf_token}
 {html_image src="admin-ajax-indicator.gif" class="indicator" style="display:none;"}
 
 {jsfile src="js/jquery.qtip.min.js"}
@@ -299,18 +303,23 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {jsfile src="autocomplete.js"}
 {jsfile src="reservationPopup.js"}
 {jsfile src="approval.js"}
+{jsfile src="admin/help.js"}
 
 <script type="text/javascript">
 
 	$(document).ready(function ()
 	{
 
-		var updateScope = {};
+		var updateScope = {
+
+		};
 		updateScope['btnUpdateThisInstance'] = '{SeriesUpdateScope::ThisInstance}';
 		updateScope['btnUpdateAllInstances'] = '{SeriesUpdateScope::FullSeries}';
 		updateScope['btnUpdateFutureInstances'] = '{SeriesUpdateScope::FutureInstances}';
 
-		var actions = {};
+		var actions = {
+
+		};
 
 		var resOpts = {
 			autocompleteUrl: "{$Path}ajax/autocomplete.php?type={AutoCompleteType::User}",
@@ -360,5 +369,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 <div id="approveDiv" style="display:none;text-align:center; top:15%;position:relative;">
 	<h3>{translate key=Approving}...</h3>
 	{html_image src="reservation_submitting.gif"}
+</div>
+
 </div>
 {include file='globalfooter.tpl'}

@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -49,17 +49,29 @@ class Server
 
     public function SetSession($name, $value)
     {
-        if (!is_null($value))
-        {
-            @session_start();
-        }
+//        if (!is_null($value))
+//        {
+			if (!$this->IsSessionStarted())
+			{
+                $parts = parse_url(Configuration::Instance()->GetScriptUrl());
+                $path = isset($parts['path']) ? $parts['path'] : '';
+                session_set_cookie_params(0, $path);
+				@session_start();
+			}
+//        }
 
         $_SESSION[self::sessionId][$name] = $value;
     }
 
     public function GetSession($name)
     {
-        @session_start();
+        if (!$this->IsSessionStarted())
+		{
+            $parts = parse_url(Configuration::Instance()->GetScriptUrl());
+            $path = isset($parts['path']) ? $parts['path'] : '';
+            session_set_cookie_params(0, $path);
+			@session_start();
+		}
         if (isset($_SESSION[self::sessionId][$name]))
         {
             return $_SESSION[self::sessionId][$name];
@@ -75,6 +87,21 @@ class Server
 	}
 
 	/**
+	 * @return bool
+	 */
+	private function IsSessionStarted()
+	{
+	    if ( php_sapi_name() !== 'cli' ) {
+	        if ( version_compare(phpversion(), '5.4.0', '>=') ) {
+	            return session_status() === PHP_SESSION_ACTIVE ? TRUE : FALSE;
+	        } else {
+	            return session_id() === '' ? FALSE : TRUE;
+	        }
+	    }
+	    return FALSE;
+	}
+
+	/**
      * @param string $name
      * @return string|null
      */
@@ -86,7 +113,7 @@ class Server
 
 			if (!empty($value) && !is_array($value))
 			{
-            	return htmlspecialchars($value);
+            	return htmlspecialchars(trim($value));
 			}
 			else if(is_array($value))
 			{
@@ -101,7 +128,7 @@ class Server
 
 	private static function specialchars($val)
 	{
-		return htmlspecialchars($val);
+		return htmlspecialchars(trim($val));
 	}
 
     /**
@@ -113,7 +140,7 @@ class Server
 		$value = $this->GetRawForm($name);
 		if (!empty($value) && !is_array($value))
 		{
-			return htmlspecialchars($value);
+			return htmlspecialchars(trim($value));
 		}
 
         return $value;
@@ -132,7 +159,7 @@ class Server
 				return $_POST[$name];
 			}
 
-			return $_POST[$name];
+			return trim($_POST[$name]);
 		}
 		return null;
 	}

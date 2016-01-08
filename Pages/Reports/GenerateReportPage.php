@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -84,6 +84,11 @@ interface IGenerateReportPage extends IDisplayableReportPage, IActionPage
 	 * @return int
 	 */
 	public function GetUserId();
+
+	/**
+	 * @return int
+	 */
+	public function GetParticipantId();
 
 	/**
 	 * @abstract
@@ -237,6 +242,14 @@ class GenerateReportPage extends ActionPage implements IGenerateReportPage
 	public function GetUserId()
 	{
 		return $this->GetValue(FormKeys::USER_ID);
+	}
+
+	/**
+	 * @return int
+	 */
+	public function GetParticipantId()
+	{
+		return $this->GetValue(FormKeys::PARTICIPANT_ID);
 	}
 
 	/**

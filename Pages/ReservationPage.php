@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -133,6 +133,11 @@ interface IReservationPage extends IPage
 	 * @param bool $isHidden
 	 */
 	function HideRecurrence($isHidden);
+
+	/**
+	 * @param bool $allowParticipation
+	 */
+	function SetAllowParticipantsToJoin($allowParticipation);
 }
 
 abstract class ReservationPage extends Page implements IReservationPage
@@ -305,6 +310,11 @@ abstract class ReservationPage extends Page implements IReservationPage
 	public function SetInvitees($invitees)
 	{
 		$this->Set('Invitees', $invitees);
+	}
+
+	public function SetAllowParticipantsToJoin($allowParticipantsToJoin)
+	{
+		$this->Set('AllowParticipantsToJoin', $allowParticipantsToJoin);
 	}
 
 	public function SetAccessories($accessories)

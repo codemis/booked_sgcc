@@ -1,17 +1,17 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
-This file is part of Booked SchedulerBooked SchedulereIt is free software: you can redistribute it and/or modify
+This file is part of Booked Scheduler is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
-(at your option) any later versBooked SchedulerduleIt is distributed in the hope that it will be useful,
+(at your option) any later version is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-alBooked SchedulercheduleIt.  If not, see <http://www.gnu.org/licenses/>.
+along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 require_once(ROOT_DIR . 'Domain/Access/namespace.php');
@@ -19,46 +19,60 @@ require_once(ROOT_DIR . 'Domain/Access/namespace.php');
 interface ICalendarSubscriptionService
 {
     /**
-     * @abstract
      * @param string $publicResourceId
      * @return BookableResource
      */
-    function GetResource($publicResourceId);
+	public function GetResource($publicResourceId);
 
     /**
-     * @abstract
      * @param string $publicScheduleId
      * @return Schedule
      */
-    function GetSchedule($publicScheduleId);
+	public function GetSchedule($publicScheduleId);
 
     /**
-     * @abstract
      * @param string $publicUserId
      * @return User
      */
-    function GetUser($publicUserId);
+	public function GetUser($publicUserId);
 
     /**
-     * @abstract
      * @param int $userId
      * @return CalendarSubscriptionDetails
      */
-    function ForUser($userId);
+	public function ForUser($userId);
+
+	/**
+	 * @param int $userId
+	 * @param int $resourceId
+	 * @return CalendarSubscriptionDetails
+	 */
+	public function ForUserAndResource($userId, $resourceId);
+
+	/**
+	 * @param int $userId
+	 * @param int $scheduleId
+	 * @return CalendarSubscriptionDetails
+	 */
+	public function ForUserAndSchedule($userId, $scheduleId);
 
     /**
-     * @abstract
      * @param int $resourceId
      * @return CalendarSubscriptionDetails
      */
-    function ForResource($resourceId);
+	public  function ForResource($resourceId);
 
     /**
-     * @abstract
      * @param int $scheduleId
      * @return CalendarSubscriptionDetails
      */
-    function ForSchedule($scheduleId);
+	public function ForSchedule($scheduleId);
+
+	/**
+	 * @param string $publicResourceGroupId
+	 * @return int[]
+	 */
+	public function GetResourcesInGroup($publicResourceGroupId);
 }
 
 class CalendarSubscriptionDetails
@@ -186,6 +200,24 @@ class CalendarSubscriptionService implements ICalendarSubscriptionService
         return $this->cache[$publicUserId];
     }
 
+    public function GetResourcesInGroup($publicResourceGroupId)
+    {
+        if (!array_key_exists($publicResourceGroupId, $this->cache))
+        {
+			$group = $this->resourceRepository->LoadResourceGroupByPublicId($publicResourceGroupId);
+
+			if ($group == null)
+			{
+				return array();
+			}
+
+			$groups = $this->resourceRepository->GetResourceGroups();
+            $this->cache[$publicResourceGroupId] = $groups->GetResourceIds($group->id);
+        }
+
+        return $this->cache[$publicResourceGroupId];
+    }
+
     /**
      * @param int $userId
      * @return CalendarSubscriptionDetails
@@ -197,6 +229,26 @@ class CalendarSubscriptionService implements ICalendarSubscriptionService
         return new CalendarSubscriptionDetails(
             $user->GetIsCalendarSubscriptionAllowed(),
             new CalendarSubscriptionUrl($user->GetPublicId(), null, null));
+    }
+
+	public function ForUserAndResource($userId, $resourceId)
+    {
+        $user = $this->userRepository->LoadById($userId);
+		$resource = $this->resourceRepository->LoadById($resourceId);
+
+        return new CalendarSubscriptionDetails(
+            $user->GetIsCalendarSubscriptionAllowed(),
+            new CalendarSubscriptionUrl($user->GetPublicId(), null, $resource->GetPublicId()));
+    }
+
+	public function ForUserAndSchedule($userId, $scheduleId)
+    {
+        $user = $this->userRepository->LoadById($userId);
+		$schedule = $this->scheduleRepository->LoadById($scheduleId);
+
+        return new CalendarSubscriptionDetails(
+            $user->GetIsCalendarSubscriptionAllowed(),
+            new CalendarSubscriptionUrl($user->GetPublicId(), $schedule->GetPublicId(), null));
     }
 
     /**
@@ -225,5 +277,3 @@ class CalendarSubscriptionService implements ICalendarSubscriptionService
             new CalendarSubscriptionUrl(null, $schedule->GetPublicId(), null));
     }
 }
-
-?>

@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2013-2014 Nick Korbel
+Copyright 2013-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -151,6 +151,11 @@ class ResourceSaveController implements IResourceSaveController
 			$resource->ChangeStatus($request->statusId, $request->statusReasonId);
 		}
 
+		if (isset($request->resourceTypeId))
+		{
+			$resource->SetResourceTypeId($request->resourceTypeId);
+		}
+
 		return $resource;
 	}
 }
@@ -190,5 +195,3 @@ class ResourceControllerResult
 		return $this->errors;
 	}
 }
-
-?>

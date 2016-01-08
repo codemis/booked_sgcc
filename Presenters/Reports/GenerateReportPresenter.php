@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -188,9 +188,6 @@ class GenerateReportPresenter extends ActionPresenter
 	 */
 	private function GetFilter()
 	{
-		return new Report_Filter($this->page->GetResourceId(), $this->page->GetScheduleId(), $this->page->GetUserId(), $this->page->GetGroupId(), $this->page->GetAccessoryId());
+		return new Report_Filter($this->page->GetResourceId(), $this->page->GetScheduleId(), $this->page->GetUserId(), $this->page->GetGroupId(), $this->page->GetAccessoryId(), $this->page->GetParticipantId());
 	}
 }
-
-
-?>

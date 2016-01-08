@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -18,13 +18,13 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
 {include file='globalheader.tpl' cssFiles='scripts/css/jquery.contextMenu.css,scripts/css/jqtree.css,css/admin.css'}
 
-<h1>{translate key='ManageResourceGroups'}</h1>
+<h1>{translate key='ManageResourceGroups'} {html_image src="question-button.png" id="help-prompt" ref="help-resource-groups"}</h1>
 
 <div id="globalError" class="error" style="display:none"></div>
 <div class="admin">
 	<div class="title">
 		{translate key='ResourceGroups'}
-		<div id="help-button" class="help" help-ref="help">&nbsp;</div>
+		{*<div id="help-button" class="help" help-ref="help">&nbsp;</div>*}
 	</div>
 
 	<div id="manage-resource-groups-container">
@@ -95,6 +95,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 	</ul>
 </div>
 
+{csrf_token}
 {html_image src="admin-ajax-indicator.gif" class="indicator" style="display:none;"}
 {jsfile src="js/jquery.watermark.min.js"}
 {jsfile src="admin/edit.js"}
@@ -103,6 +104,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {jsfile src="js/tree.jquery.js"}
 {jsfile src="js/jquery.cookie.js"}
 {jsfile src="js/jquery.contextMenu.js"}
+{jsfile src="admin/help.js"}
 
 <script type="text/javascript">
 

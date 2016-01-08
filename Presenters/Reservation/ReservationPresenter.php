@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -123,7 +123,7 @@ class EditReservationPresenter extends ReservationPresenterBase
 		$reservationView = $this->reservationViewRepository->GetReservationForEditing($referenceNumber);
 
 		$this->preconditionService->CheckAll($this->page, $user, $reservationView);
-		$initializer = $this->initializationFactory->GetExisitingInitializer($this->page, $reservationView);
+		$initializer = $this->initializationFactory->GetExistingInitializer($this->page, $reservationView);
 		$initializer->Initialize();
 	}
 }

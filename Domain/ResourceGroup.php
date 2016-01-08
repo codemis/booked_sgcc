@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2013-2014 Nick Korbel
+Copyright 2013-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -35,9 +35,25 @@ class ResourceGroupTree
 	 */
 	protected $resources = array();
 
+	/**
+	 * @var ResourceGroup[]
+	 */
+	private $orphaned = array();
+
 	public function AddGroup(ResourceGroup $group)
 	{
-		$this->references[$group->id] = $group;
+		$groupId = $group->id;
+		$this->references[$groupId] = $group;
+
+		if (array_key_exists($groupId, $this->orphaned))
+		{
+			foreach ($this->orphaned as $orphanedGroup)
+			{
+				$this->references[$groupId]->AddChild($orphanedGroup);
+			}
+
+			unset($this->orphaned[$groupId]);
+		}
 
 		// It it's a root node, we add it directly to the tree
 		$parent_id = $group->parent_id;
@@ -47,8 +63,16 @@ class ResourceGroupTree
 		}
 		else
 		{
-			// It was not a root node, add this node as a reference in the parent.
-			$this->references[$parent_id]->AddChild($group);
+			if (!array_key_exists($parent_id, $this->references))
+			{
+				// parent hasn't been added yet, hold this off until the parent shows up
+				$this->orphaned[$parent_id] = $group;
+			}
+			else
+			{
+				// It was not a root node, add this node as a reference in the parent.
+				$this->references[$parent_id]->AddChild($group);
+			}
 		}
 	}
 
@@ -104,6 +128,15 @@ class ResourceGroupTree
 		}
 
 		return $resourceIds;
+	}
+
+	/**
+	 * @param int $groupId
+	 * @return ResourceGroup
+	 */
+	public function GetGroup($groupId)
+	{
+		return $this->references[$groupId];
 	}
 
 	/**
@@ -166,7 +199,7 @@ class ResourceGroup
 	}
 
 	/**
-	 * @param int $id
+	 * @param int|long $id
 	 */
 	public function WithId($id)
 	{
@@ -257,4 +290,3 @@ class ResourceGroupAssignment implements IResource
 		return $this->resource_id;
 	}
 }
-?>

@@ -1,17 +1,17 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
-This file is part of Booked SchedulerBooked SchedulereIt is free software: you can redistribute it and/or modify
+This file is part of Booked Scheduler is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
-(at your option) any later versBooked SchedulerduleIt is distributed in the hope that it will be useful,
+(at your option) any later version is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-alBooked SchedulercheduleIt.  If not, see <http://www.gnu.org/licenses/>.
+along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 require_once(ROOT_DIR . 'lib/Email/namespace.php');
@@ -90,6 +90,11 @@ abstract class ReservationEmailMessage extends EmailMessage
         $this->Set('StartDate', $currentInstance->StartDate()->ToTimezone($this->timezone));
         $this->Set('EndDate', $currentInstance->EndDate()->ToTimezone($this->timezone));
         $this->Set('ResourceName', $this->reservationSeries->Resource()->GetName());
+        $img = $this->reservationSeries->Resource()->GetImage();
+        if (!empty($img))
+        {
+            $this->Set('ResourceImage', $this->GetFullImagePath($img));
+        }
         $this->Set('Title', $this->reservationSeries->Title());
         $this->Set('Description', $this->reservationSeries->Description());
 
@@ -104,7 +109,8 @@ abstract class ReservationEmailMessage extends EmailMessage
         $this->Set('RepeatDates', $repeatDates);
         $this->Set('RequiresApproval', $this->reservationSeries->RequiresApproval());
         $this->Set('ReservationUrl', sprintf("%s?%s=%s", Pages::RESERVATION, QueryStringKeys::REFERENCE_NUMBER, $currentInstance->ReferenceNumber()));
-        $this->Set('ICalUrl', sprintf("export/%s?%s=%s", Pages::CALENDAR_EXPORT, QueryStringKeys::REFERENCE_NUMBER, $currentInstance->ReferenceNumber()));
+        $icalUrl = sprintf("export/%s?%s=%s", Pages::CALENDAR_EXPORT, QueryStringKeys::REFERENCE_NUMBER, $currentInstance->ReferenceNumber());
+        $this->Set('ICalUrl', $icalUrl);
 
 		$resourceNames = array();
 		foreach($this->reservationSeries->AllResources() as $resource)
@@ -122,7 +128,16 @@ abstract class ReservationEmailMessage extends EmailMessage
 		}
 
 		$this->Set('Attributes', $attributeValues);
+
+        $bookedBy = $this->reservationSeries->BookedBy();
+        if ($bookedBy != null && ($bookedBy->UserId != $this->reservationOwner->Id()))
+        {
+            $this->Set('CreatedBy', new FullName($bookedBy->FirstName, $bookedBy->LastName));
+        }
     }
 
-
+    private function GetFullImagePath($img)
+    {
+        return Configuration::Instance()->GetKey(ConfigKeys::IMAGE_UPLOAD_URL) . '/' . $img;
+    }
 }

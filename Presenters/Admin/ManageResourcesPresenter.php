@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -43,6 +43,10 @@ class ManageResourcesActions
 	const ActionChangeSort = 'changeSort';
 	const ActionChangeResourceType = 'changeResourceType';
 	const ActionBulkUpdate = 'bulkUpdate';
+	const ActionAddUserPermission = 'addUserPermission';
+	const ActionRemoveUserPermission = 'removeUserPermission';
+	const ActionAddGroupPermission = 'addGroupPermission';
+	const ActionRemoveGroupPermission = 'removeGroupPermission';
 }
 
 class ManageResourcesPresenter extends ActionPresenter
@@ -119,6 +123,10 @@ class ManageResourcesPresenter extends ActionPresenter
 		$this->AddAction(ManageResourcesActions::ActionChangeSort, 'ChangeSortOrder');
 		$this->AddAction(ManageResourcesActions::ActionChangeResourceType, 'ChangeResourceType');
 		$this->AddAction(ManageResourcesActions::ActionBulkUpdate, 'BulkUpdate');
+		$this->AddAction(ManageResourcesActions::ActionAddUserPermission, 'AddUserPermission');
+		$this->AddAction(ManageResourcesActions::ActionRemoveUserPermission, 'RemoveUserPermission');
+		$this->AddAction(ManageResourcesActions::ActionAddGroupPermission, 'AddGroupPermission');
+		$this->AddAction(ManageResourcesActions::ActionRemoveGroupPermission, 'RemoveGroupPermission');
 	}
 
 	public function PageLoad()
@@ -486,6 +494,8 @@ class ManageResourcesPresenter extends ActionPresenter
 
 		$resourceIds = $this->page->GetBulkUpdateResourceIds();
 
+		$emptyDuration = 'dhm';
+		
 		foreach ($resourceIds as $resourceId)
 		{
 			try
@@ -524,23 +534,43 @@ class ManageResourcesPresenter extends ActionPresenter
 				{
 					$resource->ChangeStatus($statusId, $reasonId);
 				}
-				if (!$minDurationNone)
+				if ($minDurationNone)
+				{
+					$resource->SetMinLength(0);
+				}
+				if (!$minDurationNone && $minDuration != $emptyDuration)
 				{
 					$resource->SetMinLength($minDuration);
 				}
-				if (!$maxDurationNone)
+				if ($maxDurationNone)
+				{
+					$resource->SetMaxLength(0);
+				}
+				if (!$maxDurationNone && $maxDuration != $emptyDuration)
 				{
 					$resource->SetMaxLength($maxDuration);
 				}
-				if (!$bufferTimeNone)
+				if ($bufferTimeNone)
+				{
+					$resource->SetBufferTime(0);
+				}
+				if (!$bufferTimeNone && $bufferTime != $emptyDuration)
 				{
 					$resource->SetBufferTime($bufferTime);
 				}
-				if (!$minNoticeNone)
+				if ($minNoticeNone)
+				{
+					$resource->SetMinNotice(0);
+				}
+				if (!$minNoticeNone && $minNotice != $emptyDuration)
 				{
 					$resource->SetMinNotice($minNotice);
 				}
-				if (!$maxNoticeNone)
+				if ($maxNoticeNone)
+				{
+					$resource->SetMaxNotice(0);
+				}
+				if (!$maxNoticeNone && $maxNotice != $emptyDuration)
 				{
 					$resource->SetMaxNotice($maxNotice);
 				}
@@ -586,6 +616,38 @@ class ManageResourcesPresenter extends ActionPresenter
 		}
 	}
 
+	public function AddUserPermission()
+	{
+		$userId = $this->page->GetPermissionUserId();
+		$resourceId = $this->page->GetResourceId();
+
+		$this->resourceRepository->AddResourceUserPermission($resourceId, $userId);
+	}
+
+	public function RemoveUserPermission()
+	{
+		$userId = $this->page->GetPermissionUserId();
+		$resourceId = $this->page->GetResourceId();
+
+		$this->resourceRepository->RemoveResourceUserPermission($resourceId, $userId);
+	}
+
+	public function AddGroupPermission()
+	{
+		$groupId = $this->page->GetPermissionGroupId();
+		$resourceId = $this->page->GetResourceId();
+
+		$this->resourceRepository->AddResourceGroupPermission($resourceId, $groupId);
+	}
+
+	public function RemoveGroupPermission()
+	{
+		$groupId = $this->page->GetPermissionGroupId();
+		$resourceId = $this->page->GetResourceId();
+
+		$this->resourceRepository->RemoveResourceGroupPermission($resourceId, $groupId);
+	}
+
 	protected function LoadValidators($action)
 	{
 		if ($action == ManageResourcesActions::ActionChangeAttributes)
@@ -605,6 +667,18 @@ class ManageResourcesPresenter extends ActionPresenter
 		if ($dataRequest == 'all')
 		{
 			$this->page->SetResourcesJson(array_map(array('AdminResourceJson', 'FromBookable'), $this->resourceRepository->GetResourceList()));
+		}
+		else if ($dataRequest == 'users')
+		{
+			$groups = $this->resourceRepository->GetUsersWithPermission($this->page->GetResourceId());
+			$response = new UserResults($groups->Results(), $groups->PageInfo()->Total);
+			$this->page->SetJsonResponse($response);
+		}
+		else if ($dataRequest == 'groups')
+		{
+			$groups = $this->resourceRepository->GetGroupsWithPermission($this->page->GetResourceId());
+			$response = new GroupResults($groups->Results(), $groups->PageInfo()->Total);
+			$this->page->SetJsonResponse($response);
 		}
 	}
 
@@ -634,4 +708,53 @@ class AdminResourceJson
 	{
 		return new AdminResourceJson($resource->GetId(), $resource->GetName());
 	}
+}
+
+class UserResults
+{
+	/**
+	 * @param UserItemView[] $users
+	 * @param int $totalUsers
+	 */
+	public function __construct($users, $totalUsers)
+	{
+		foreach ($users as $user)
+		{
+			$this->Users[] = new AutocompleteUser($user->Id, $user->First, $user->Last, $user->Email, $user->Username);
+		}
+		$this->Total = $totalUsers;
+	}
+
+	/**
+	 * @var int
+	 */
+	public $Total;
+
+	/**
+	 * @var AutocompleteUser[]
+	 */
+	public $Users;
+}
+
+class GroupResults
+{
+	/**
+	 * @param GroupItemView[] $groups
+	 * @param int $totalGroups
+	 */
+	public function __construct($groups, $totalGroups)
+	{
+		$this->Groups = $groups;
+		$this->Total = $totalGroups;
+	}
+
+	/**
+	 * @var int
+	 */
+	public $Total;
+
+	/**
+	 * @var GroupItemView[]
+	 */
+	public $Groups;
 }

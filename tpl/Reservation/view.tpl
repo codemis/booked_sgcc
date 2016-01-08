@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -26,8 +26,8 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 			<ul class="no-style">
 				<li>
 					<label>{translate key='User'}</label>
-				{if $ShowUserDetails}
-					{$ReservationUserName}
+				{if $ShowUserDetails && $ShowReservationDetails}
+					<a href="#" class="bindableUser" data-userid="{$UserId}">{$ReservationUserName}</a>
 				{else}
 					{translate key=Private}
 				{/if}
@@ -41,6 +41,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 					{/foreach}
 				</li>
 				<li>
+					{if $ShowReservationDetails}
 					<label>{translate key='Accessories'}</label>
 					{foreach from=$Accessories item=accessory name=accessoryLoop}
 						({$accessory->QuantityReserved})
@@ -50,6 +51,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 							{$accessory->Name},
 						{/if}
 					{/foreach}
+					{/if}
 				</li>
 				<li class="section">
 					<label>{translate key='BeginDate'}</label> {formatdate date=$StartDate}
@@ -72,29 +74,29 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 					{/foreach}
 				</li>
 				<li>
-						<label>{translate key=ReservationLength}</label>
+					<label>{translate key=ReservationLength}</label>
 
-						<div class="durationText">
-							<span id="durationDays">0</span> {translate key='days'},
-							<span id="durationHours">0</span> {translate key='hours'}
-						</div>
-					</li>
+					<div class="durationText">
+						<span id="durationDays">0</span> {translate key='days'},
+						<span id="durationHours">0</span> {translate key='hours'}
+					</div>
+				</li>
 				<li>
 					<label>{translate key='RepeatPrompt'}</label> {translate key=$RepeatOptions[$RepeatType]['key']}
-				{if $IsRecurring}
-					<div class="repeat-details">
-						<label>{translate key='RepeatEveryPrompt'}</label> {$RepeatInterval} {$RepeatOptions[$RepeatType]['everyKey']}
-						{if $RepeatMonthlyType neq ''}
-							({$RepeatMonthlyType})
-						{/if}
-						{if count($RepeatWeekdays) gt 0}
-							<br/><label>{translate key='RepeatDaysPrompt'}</label> {foreach from=$RepeatWeekdays item=day}{translate key=$DayNames[$day]} {/foreach}
-						{/if}
-						<br/><label>{translate key='RepeatUntilPrompt'}</label> {formatdate date=$RepeatTerminationDate}
-					</div>
-				{/if}
+					{if $IsRecurring}
+						<div class="repeat-details">
+							<label>{translate key='RepeatEveryPrompt'}</label> {$RepeatInterval} {$RepeatOptions[$RepeatType]['everyKey']}
+							{if $RepeatMonthlyType neq ''}
+								({$RepeatMonthlyType})
+							{/if}
+							{if count($RepeatWeekdays) gt 0}
+								<br/><label>{translate key='RepeatDaysPrompt'}</label> {foreach from=$RepeatWeekdays item=day}{translate key=$DayNames[$day]} {/foreach}
+							{/if}
+							<br/><label>{translate key='RepeatUntilPrompt'}</label> {formatdate date=$RepeatTerminationDate}
+						</div>
+					{/if}
+				</li>
 				{if $ShowReservationDetails}
-					</li>
 					<li class="section">
 						<label>{translate key='ReservationTitle'}</label>
 						{if $ReservationTitle neq ''}
@@ -113,16 +115,17 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 						{/if}
 					</li>
 				{/if}
+			</ul>
 		</div>
 
-		{if $ShowParticipation}
+		{if $ShowParticipation && $ShowReservationDetails}
 		<div id="reservationParticipation">
 			<ul class="no-style">
 				{if $ShowUserDetails}
 					<li class="section">
 						<label>{translate key='ParticipantList'}</label>
 						{foreach from=$Participants item=participant}
-							<br/>{$participant->FullName}
+							<br/><a href="#" class="bindableUser" data-userid="{$participant->UserId}">{$participant->FullName}</a>
 						{foreachelse}
 							<span class="no-data">{translate key='None'}</span>
 						{/foreach}
@@ -131,13 +134,13 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 					<li>
 						<label>{translate key='InvitationList'}</label>
 						{foreach from=$Invitees item=invitee}
-							<br/>{$invitee->FullName}
+							<br/><a href="#" class="bindableUser" data-userid="{$invitee->UserId}">{$invitee->FullName}</a>
 						{foreachelse}
 							<span class="no-data">{translate key='None'}</span>
 						{/foreach}
 					</li>
 				{/if}
-				<li>
+				<li style="padding-top:15px;">
 					{if $IAmParticipating}
 						{translate key=CancelParticipation}?
 						</li>
@@ -145,8 +148,9 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 						{if $IsRecurring}
 							<button value="{InvitationAction::CancelAll}" class="button participationAction">{html_image src="user-minus.png"} {translate key=AllInstances}</button>
 							<button value="{InvitationAction::CancelInstance}" class="button participationAction">{html_image src="user-minus.png"} {translate key=ThisInstance}</button>
+						{else}
+							<button value="{InvitationAction::CancelInstance}" class="button participationAction">{html_image src="user-minus.png"} {translate key=CancelParticipation}</button>
 						{/if}
-						<button value="{InvitationAction::CancelInstance}" class="button participationAction">{html_image src="user-minus.png"} {translate key=CancelParticipation}</button>
 					{/if}
 
 					{if $IAmInvited}
@@ -155,6 +159,19 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 						<li>
 						<button value="{InvitationAction::Accept}" class="button participationAction">{html_image src="ticket-plus.png"} {translate key=Yes}</button>
 						<button value="{InvitationAction::Decline}" class="button participationAction">{html_image src="ticket-minus.png"} {translate key=No}</button>
+					{/if}
+
+					{if $AllowParticipantsToJoin && !$IAmParticipating && !$IAmInvited}
+						</li>
+						<li id="joinReservation">
+							{translate key=JoinThisReservation}?
+							{if $IsRecurring}
+								<button value="{InvitationAction::JoinAll}" id="btnJoinSeries" class="button participationAction">{html_image src="ticket-plus.png"} {translate key=AllInstances}</button>
+								<button value="{InvitationAction::Join}" id="btnJoinInstance" class="button participationAction">{html_image src="ticket-plus.png"} {translate key=ThisInstance}</button>
+							{else}
+								<button value="{InvitationAction::Join}" id="btnJoin" class="button participationAction">{html_image src="ticket-plus.png"} {translate key=Yes}</button>
+							{/if}
+						</li>
 					{/if}
 					{html_image id="indicator" src="admin-ajax-indicator.gif" style="display:none;"}
 				</li>
@@ -242,6 +259,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {jsfile src="date-helper.js"}
 {jsfile src="reservation.js"}
 {jsfile src="autocomplete.js"}
+{jsfile src="userPopup.js"}
 
 	<script type="text/javascript">
 
@@ -279,15 +297,17 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		reservation.init('{$UserId}');
 
 		var options = {
-				target: '#result',   // target element(s) to be updated with server response
-				beforeSubmit: reservation.preSubmit,  // pre-submit callback
-				success: reservation.showResponse  // post-submit callback
-			};
+			target: '#result',   // target element(s) to be updated with server response
+			beforeSubmit: reservation.preSubmit,  // pre-submit callback
+			success: reservation.showResponse  // post-submit callback
+		};
 
-			$('#reservationForm').submit(function() {
-				$(this).ajaxSubmit(options);
-				return false;
-			});
+		$('#reservationForm').submit(function() {
+			$(this).ajaxSubmit(options);
+			return false;
+		});
+
+		$('.bindableUser').bindUserDetails();
 	});
 
 	</script>

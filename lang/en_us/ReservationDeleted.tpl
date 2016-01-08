@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -16,45 +16,57 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
-{include file='..\..\tpl\Email\emailheader.tpl'}
+Reservation Details:
+<br/>
+<br/>
 
-	Reservation Details:
+User: {$UserName}<br/>
+Starting: {formatdate date=$StartDate key=reservation_email}<br/>
+Ending: {formatdate date=$EndDate key=reservation_email}<br/>
+{if $ResourceNames|count > 1}
+	Resources:
 	<br/>
-	<br/>
-
-	User: {$UserName}<br/>
-	Starting: {formatdate date=$StartDate key=reservation_email}<br/>
-	Ending: {formatdate date=$EndDate key=reservation_email}<br/>
-	{if $ResourceNames|count > 1}
-		Resources:<br/>
-		{foreach from=$ResourceNames item=resourceName}
-			{$resourceName}<br/>
-		{/foreach}
-		{else}
-		Resource: {$ResourceName}<br/>
-	{/if}
-	Title: {$Title}<br/>
-	Description: {$Description|nl2br}<br/>
-
-	{if count($RepeatDates) gt 0}
+	{foreach from=$ResourceNames item=resourceName}
+		{$resourceName}
 		<br/>
-		The following dates have been removed:
-		<br/>
-	{/if}
-
-	{foreach from=$RepeatDates item=date name=dates}
-		{formatdate date=$date}<br/>
 	{/foreach}
-
-	{if $Accessories|count > 0}
-		<br/>Accessories:<br/>
-		{foreach from=$Accessories item=accessory}
-			({$accessory->QuantityReserved}) {$accessory->Name}<br/>
-		{/foreach}
-	{/if}
-
+{else}
+	Resource: {$ResourceName}
 	<br/>
-        <br/>
-	<a href="{$ScriptUrl}">Log in to Booked Scheduler</a>
+{/if}
 
-{include file='..\..\tpl\Email\emailfooter.tpl'}
+{if $ResourceImage}
+	<div class="resource-image"><img src="{$ScriptUrl}/{$ResourceImage}"/></div>
+{/if}
+
+Title: {$Title}<br/>
+Description: {$Description|nl2br}<br/>
+
+{if count($RepeatDates) gt 0}
+	<br/>
+	The following dates have been removed:
+	<br/>
+{/if}
+
+{foreach from=$RepeatDates item=date name=dates}
+	{formatdate date=$date}
+	<br/>
+{/foreach}
+
+{if $Accessories|count > 0}
+	<br/>
+	Accessories:
+	<br/>
+	{foreach from=$Accessories item=accessory}
+		({$accessory->QuantityReserved}) {$accessory->Name}
+		<br/>
+	{/foreach}
+{/if}
+
+{if !empty($CreatedBy)}
+	<br/>
+	Deleted by: {$CreatedBy}
+{/if}
+<br/>
+<br/>
+<a href="{$ScriptUrl}">Log in to Booked Scheduler</a>

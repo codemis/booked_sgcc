@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -75,7 +75,7 @@ interface IParticipationPage
 class ParticipationPage extends SecurePage implements IParticipationPage
 {
 	/**
-	 * @var \ParticipationPresenter
+	 * @var ParticipationPresenter
 	 */
 	private $presenter;
 
@@ -138,4 +138,3 @@ class ParticipationPage extends SecurePage implements IParticipationPage
 		$this->Set('ActionResult', $result);
 	}
 }
-?>

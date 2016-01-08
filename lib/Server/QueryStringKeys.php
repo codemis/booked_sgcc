@@ -1,17 +1,17 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
-This file is part of Booked SchedulerBooked SchedulereIt is free software: you can redistribute it and/or modify
+This file is part of Booked Scheduler is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
-(at your option) any later versBooked SchedulerduleIt is distributed in the hope that it will be useful,
+(at your option) any later version is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-alBooked SchedulercheduleIt.  If not, see <http://www.gnu.org/licenses/>.
+along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 class QueryStringKeys
@@ -58,6 +58,7 @@ class QueryStringKeys
 	const RESERVATION_STATUS_REASON_ID = 'rsrid';
 	const RESPONSE_TYPE = 'rs';
 	const RESOURCE_ID = 'rid';
+	const RESOURCE_GROUP_ID = 'rgid';
 	const RESOURCE_TYPE_ID = 'rtid';
 	const RESERVATION_RESOURCE_STATUS_ID = 'rrsid';
 	const RESERVATION_RESOURCE_REASON_ID = 'rrsrid';

@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -175,6 +175,11 @@ class ManageGroupsPage extends ActionPage implements IManageGroupsPage
 	 */
 	public function GetGroupId()
 	{
+		$groupId = $this->GetForm(FormKeys::GROUP_ID);
+		if (!empty($groupId))
+		{
+			return $groupId;
+		}
 		return $this->GetQuerystring(QueryStringKeys::GROUP_ID);
 	}
 

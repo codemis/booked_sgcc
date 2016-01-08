@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -63,11 +63,15 @@ class ReservationUpdatePage extends ReservationSavePage implements IReservationU
 	{
 		try
 		{
+			$this->EnforceCSRFCheck();
 			$reservation = $this->_presenter->BuildReservation();
 			$this->_presenter->HandleReservation($reservation);
 
 			if ($this->_reservationSavedSuccessfully)
 			{
+				$this->Set('Resources', $reservation->AllResources());
+				$this->Set('Instances', $reservation->Instances());
+				$this->Set('Timezone', ServiceLocator::GetServer()->GetUserSession()->Timezone);
 				$this->Display('Ajax/reservation/update_successful.tpl');
 			}
 			else

@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -312,6 +312,28 @@ class Reservation
 		}
 
 		return false;
+	}
+
+	/**
+	 * @param int $userId
+	 * @return bool whether the user joined
+	 */
+	public function JoinReservation($userId)
+	{
+		if (in_array($userId, $this->_participantIds))
+		{
+			// already participating
+			return false;
+		}
+
+		if (in_array($userId, $this->_inviteeIds))
+		{
+			$this->removedInvitees[] = $userId;
+		}
+
+		$this->addedParticipants[] = $userId;
+
+		return true;
 	}
 
 	/**

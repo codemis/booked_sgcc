@@ -90,7 +90,7 @@ div.error, div.warning, div.success, #loginError {
 	background: #ffc3c8 url("../img/s_error.png") no-repeat scroll 5px 5px;
 
 	margin: 5px auto 5px auto;
-	padding: 6px 25px;
+	padding: 6px 25px !important;
 	font-size: 14px;
 	font-family: sans-serif;
 	text-align: center;
@@ -455,9 +455,9 @@ div.notification-status {
 	font-size: 11pt;
 }
 
-#help p.setting span {
+#help p.setting span, #help span.setting, #helpPopupDiv p.setting span, #helpPopupDiv span.setting {
 	color: green;
-	font-family: Courier;
+	font-family: Courier, serif;
 	display: block;
 }
 
@@ -541,7 +541,7 @@ ul.indented li {
 	font-weight: bold;
 }
 
-#resourceDetailsPopup {
+#resourceDetailsPopup, #userDetailsPopup {
 	min-width: 300px;
 	max-width: 1000px;
 	width: auto;
@@ -551,13 +551,13 @@ ul.indented li {
 	margin-left: 25px;
 }
 
-#resourceDetailsPopup h4 {
+#resourceDetailsPopup h4, #userDetailsPopup #userDetailsName {
 	border-bottom: solid 1px #000;
 	font-size: 12pt;
 	margin-bottom: 3px;
 }
 
-#resourceDetailsPopup .customAttribute {
+#resourceDetailsPopup .customAttribute, #userDetailsPopup .customAttribute {
 	font-size: inherit;
 }
 
@@ -576,7 +576,7 @@ ul.indented li {
 	float: left;
 }
 
-#resourceDetailsDiv {
+#resourceDetailsDiv, #userDetailsDiv, #customize-columns {
 	display: none;
 	position: absolute;
 	border: solid 2px #212121;
@@ -585,6 +585,10 @@ ul.indented li {
 	-moz-box-shadow: 0px 0px 3px 0px #212121;
 	-webkit-box-shadow: 0px 0px 3px 0px #212121;
 	box-shadow: 0px 0px 3px 0px #212121;
+}
+
+#userDetailsPopup .label {
+	font-weight: bold;
 }
 
 .hidden {
@@ -602,3 +606,23 @@ ul.indented li {
 .block {
 	display:block;
 }
+
+#reservationCreated .resources, #reservationUpdated .resources {
+	margin-top:10px;
+}
+
+#reservationCreated .dates, #reservationUpdated .dates {
+	margin-top:10px;
+}
+
+.resourceNameSelector {
+	cursor:pointer;
+}
+
+/*#customize-columns {*/
+	/*display:none;*/
+	/*position: absolute;*/
+	/*background-color: #fff;*/
+	/*border:solid 1px #333;*/
+	/*padding:15px;*/
+/*}*/

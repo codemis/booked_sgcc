@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -24,5 +24,3 @@ require_once(ROOT_DIR . 'Pages/Export/CalendarSubscriptionPage.php');
 
 $page = new CalendarSubscriptionPage();
 $page->PageLoad();
-
-?>

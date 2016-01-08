@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -24,6 +24,7 @@ class CustomAttributeTypes
 	const MULTI_LINE_TEXTBOX = 2;
 	const SELECT_LIST = 3;
 	const CHECKBOX = 4;
+	const DATETIME = 5;
 }
 
 class CustomAttributeCategory
@@ -116,6 +117,10 @@ class CustomAttribute
 	 */
 	public function PossibleValueList()
 	{
+		if (empty($this->possibleValues))
+		{
+			return array();
+		}
 		return explode(',', $this->possibleValues);
 	}
 

@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -71,7 +71,7 @@ class MySqlConnection implements IDbConnection
 
 	public function Query(ISqlCommand $sqlCommand)
 	{
-		mysqli_set_charset($this->_db, Resources::GetInstance()->Charset);
+		mysqli_set_charset($this->_db, 'utf8');
 		$mysqlCommand = new MySqlCommandAdapter($sqlCommand, $this->_db);
 
 		Log::Sql('MySql Query: ' . str_replace('%', '%%', $mysqlCommand->GetQuery()));
@@ -90,7 +90,7 @@ class MySqlConnection implements IDbConnection
 
 	public function Execute(ISqlCommand $sqlCommand)
 	{
-		mysqli_set_charset($this->_db, Resources::GetInstance()->Charset);
+		mysqli_set_charset($this->_db, 'utf8');
 		$mysqlCommand = new MySqlCommandAdapter($sqlCommand, $this->_db);
 
 		Log::Sql('MySql Execute: ' . str_replace('%', '%%', $mysqlCommand->GetQuery()));

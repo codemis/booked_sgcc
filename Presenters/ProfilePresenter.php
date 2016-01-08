@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -86,6 +86,8 @@ class ProfilePresenter extends ActionPresenter
 
 		$this->PopulateTimezones();
 		$this->PopulateHomepages();
+
+		$this->page->SetAllowedActions(PluginManager::Instance()->LoadAuthentication());
 	}
 
 	public function UpdateProfile()

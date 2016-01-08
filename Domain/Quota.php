@@ -1,23 +1,23 @@
 <?php
+
 /**
-Copyright 2011-2014 Nick Korbel
-
-This file is part of Booked Scheduler.
-
-Booked Scheduler is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Booked Scheduler is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright 2011-2015 Nick Korbel
+ *
+ * This file is part of Booked Scheduler.
+ *
+ * Booked Scheduler is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Booked Scheduler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 interface IQuota
 {
 	/**
@@ -130,7 +130,11 @@ class Quota implements IQuota
 			return new QuotaDurationWeek();
 		}
 
-		return new QuotaDurationMonth();
+		if ($duration == QuotaDuration::Month)
+		{
+			return new QuotaDurationMonth();
+		}
+		return new QuotaDurationYear();
 	}
 
 	/**
@@ -190,13 +194,13 @@ class Quota implements IQuota
 		}
 
 		$dates = $this->duration->GetSearchDates($reservationSeries, $timezone);
-		$reservationsWithinRange = $reservationViewRepository->GetReservationList($dates->Start(), $dates->End(), $reservationSeries->UserId(), ReservationUserLevel::OWNER);
+		$reservationsWithinRange = $reservationViewRepository->GetReservationList($dates->Start(), $dates->End(), $reservationSeries->UserId(),
+																				  ReservationUserLevel::OWNER);
 
 		try
 		{
 			$this->CheckAll($reservationsWithinRange, $reservationSeries, $timezone);
-		}
-		catch (QuotaExceededException $ex)
+		} catch (QuotaExceededException $ex)
 		{
 			return true;
 		}
@@ -336,9 +340,9 @@ class Quota implements IQuota
 				$applies = $series->ContainsResource($reservation->ResourceId) || ($series->ScheduleId() == $reservation->ScheduleId);
 			}
 
-			if ( $applies &&
-				 !array_key_exists($reservation->ReferenceNumber, $toBeSkipped) &&
-				 !$this->willBeDeleted($series, $reservation->ReservationId )
+			if ($applies &&
+					!array_key_exists($reservation->ReferenceNumber, $toBeSkipped) &&
+					!$this->willBeDeleted($series, $reservation->ReservationId)
 			)
 			{
 				$this->AddExisting($reservation, $timezone);
@@ -462,6 +466,7 @@ abstract class QuotaDuration implements IQuotaDuration
 	const Day = 'day';
 	const Week = 'week';
 	const Month = 'month';
+	const Year = 'year';
 
 	/**
 	 * @param ReservationSeries $reservationSeries
@@ -741,6 +746,104 @@ class QuotaDurationMonth extends QuotaDuration
 	public function Name()
 	{
 		return QuotaDuration::Month;
+	}
+}
+
+class QuotaDurationYear extends QuotaDuration
+{
+
+	/**
+	 * @return string QuotaDuration
+	 */
+	public function Name()
+	{
+		return QuotaDuration::Year;
+	}
+
+	/**
+	 * @param ReservationSeries $reservationSeries
+	 * @param string $timezone
+	 * @return QuotaSearchDates
+	 */
+	public function GetSearchDates(ReservationSeries $reservationSeries, $timezone)
+	{
+		$minMax = $this->GetFirstAndLastReservationDates($reservationSeries);
+
+		/** @var $start Date */
+		$start = $minMax[0]->ToTimezone($timezone);
+		/** @var $end Date */
+		$end = $minMax[1]->ToTimezone($timezone);
+
+		$searchStart = Date::Create($start->Year(), 1, 1, 0, 0, 0, $timezone);
+		$searchEnd = Date::Create($end->Year() + 1, 1, 1, 0, 0, 0, $timezone);
+
+		return new QuotaSearchDates($searchStart, $searchEnd);
+	}
+
+	/**
+	 * @param DateRange $dateRange
+	 * @return array|DateRange[]
+	 */
+	public function Split(DateRange $dateRange)
+	{
+		$ranges = array();
+
+		$start = $dateRange->GetBegin();
+		$end = $dateRange->GetEnd();
+
+		if (!$this->SameYear($start, $end))
+		{
+			$current = $start;
+
+			while (!$this->SameYear($current, $end))
+			{
+				$next = $this->GetFirstOfYear($current, 1);
+
+				$ranges[] = new DateRange($current, $next);
+
+				$current = $next;
+
+				if ($this->SameYear($current, $end))
+				{
+					$ranges[] = new DateRange($current, $end);
+				}
+			}
+		}
+		else
+		{
+			$ranges[] = $dateRange;
+		}
+
+		return $ranges;
+	}
+
+	/**
+	 * @param Date $date
+	 * @param int $yearOffset
+	 * @return Date
+	 */
+	private function GetFirstOfYear(Date $date, $yearOffset = 0)
+	{
+		return Date::Create($date->Year() + $yearOffset, 1, 1, 0, 0, 0, $date->Timezone());
+	}
+
+	/**
+	 * @param Date $d1
+	 * @param Date $d2
+	 * @return bool
+	 */
+	private function SameYear(Date $d1, Date $d2)
+	{
+		return ($d1->Year() == $d2->Year());
+	}
+
+	/**
+	 * @param Date $date
+	 * @return string
+	 */
+	public function GetDurationKey(Date $date)
+	{
+		return sprintf("Y%s", $date->Year());
 	}
 }
 

@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -95,6 +95,8 @@ class LoginPresenter
 		$this->_page->ShowPasswordPrompt($this->authentication->ShowPasswordPrompt());
 		$this->_page->ShowPersistLoginPrompt($this->authentication->ShowPersistLoginPrompt());
 		$this->_page->ShowUsernamePrompt($this->authentication->ShowUsernamePrompt());
+		$this->_page->SetRegistrationUrl($this->authentication->GetRegistrationUrl());
+		$this->_page->SetPasswordResetUrl($this->authentication->GetPasswordResetUrl());
 	}
 
 	public function Login()
@@ -151,7 +153,8 @@ class LoginPresenter
 		else
 		{
 			$defaultId = ServiceLocator::GetServer()->GetUserSession()->HomepageId;
-			$this->_page->Redirect(Pages::UrlFromId($defaultId));
+			$url = Pages::UrlFromId($defaultId);
+			$this->_page->Redirect(empty($url) ? Pages::UrlFromId(Pages::DEFAULT_HOMEPAGE_ID) : $url);
 		}
 	}
 

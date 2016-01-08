@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -18,7 +18,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
 {include file='globalheader.tpl' cssFiles='css/admin.css'}
 
-<h1>{translate key=ManageGroups}</h1>
+<h1>{translate key=ManageGroups} {html_image src="question-button.png" id="help-prompt" ref="help-groups"}</h1>
 
 <div style="padding: 10px 0px;">
 	{translate key='FindGroup'}:<br/>
@@ -142,12 +142,14 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 	</div>
 </div>
 
+{csrf_token}
 {html_image src="admin-ajax-indicator.gif" class="indicator" style="display:none;"}
 
 {jsfile src="admin/edit.js"}
 {jsfile src="autocomplete.js"}
 {jsfile src="admin/group.js"}
 {jsfile src="js/jquery.form-3.09.min.js"}
+{jsfile src="admin/help.js"}
 
 <script type="text/javascript">
 	$(document).ready(function() {

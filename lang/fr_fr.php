@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel, Boris Vatin
+Copyright 2011-2015 Nick Korbel, Boris Vatin
 
 This file is part of Booked Scheduler.
 
@@ -87,6 +87,7 @@ class fr_fr extends en_us
         $strings['NoAnnouncements'] = 'Il n\'y a aucune annonce';
         $strings['Announcements'] = 'Annonces';
         $strings['NoUpcomingReservations'] = 'Vous n\'avez aucune réservation à venir';
+	$strings['AllNoUpcomingReservations'] = 'Aucune reservations lors des %s prochains jours';
         $strings['UpcomingReservations'] = 'Réservations à venir';
         $strings['ShowHide'] = 'Afficher/Cacher';
         $strings['Error'] = 'Erreur';
@@ -407,6 +408,127 @@ class fr_fr extends en_us
 		$strings['Choose'] = 'Choisir';
 		$strings['All'] = 'Tout';
 		$strings['ViewAsChart'] = 'Voir en Graphique';
+//New
+		$strings['ReservedResources'] = 'Ressources Réservées';
+		$strings['ReservedAccessories'] = 'Accessoires réservés';
+		$strings['ResourceUsageTimeBooked'] = 'Utilisation de la ressource - Temp de résa';
+		$strings['ResourceUsageReservationCount'] = 'Utilisation de la ressource - Nombre de résas';
+		$strings['Top20UsersTimeBooked'] = 'Top 20 Utilisateurs - Temp de résa';
+		$strings['Top20UsersReservationCount'] = 'Top 20 Utilisateurs - Nombre de résas';
+		$strings['ConfigurationUpdated'] = 'Fichier de configuration mis à jour';
+		$strings['ConfigurationUiNotEnabled'] = 'Cette page n\'est pas accessible car $conf[\'settings\'][\'pages\'][\'enable.configuration\'] est mis à false ou est manquant.';
+		$strings['ConfigurationFileNotWritable'] = 'Le fichier de configuration est en lecture seule. Vérifier les permissions.';
+		$strings['ConfigurationUpdateHelp'] = 'Référez vous à la section de configuration de  <a target=_blank href=%s>Fichier d\'aide</a> pour vous documenter sur ces réglages.';
+		$strings['GeneralConfigSettings'] = 'Reglages';
+		$strings['UseSameLayoutForAllDays'] = 'Même disposition pour tous les jours';
+		$strings['LayoutVariesByDay'] = 'Disposition différente par jour';
+		$strings['ManageReminders'] = 'Rappels';
+		$strings['ReminderUser'] = 'ID Utilisateur';
+		$strings['ReminderMessage'] = 'Message';
+		$strings['ReminderAddress'] = 'Adresses';
+		$strings['ReminderSendtime'] = 'Time To Send';
+		$strings['ReminderRefNumber'] = 'Numéro Référence de Reservation ';
+		$strings['ReminderSendtimeDate'] = 'Date de Rappel';
+		$strings['ReminderSendtimeTime'] = 'Heure de Rappel (HH:MM)';
+		$strings['ReminderSendtimeAMPM'] = 'AM / PM';
+		$strings['AddReminder'] = 'Ajouter un Rappel';
+		$strings['DeleteReminderWarning'] = 'Etes vous sur ?';
+		$strings['NoReminders'] = 'Vous n\'avez aucun rappel à venir.';
+		$strings['Reminders'] = 'Rappels';
+		$strings['SendReminder'] = 'Envoyer un Rappel';
+		$strings['minutes'] = 'minutes';
+		$strings['hours'] = 'heures';
+		$strings['days'] = 'jours';
+		$strings['ReminderBeforeStart'] = 'avant l\'heure de début';
+		$strings['ReminderBeforeEnd'] = 'avant l\'heure de fin';
+		$strings['Logo'] = 'Logo';
+		$strings['CssFile'] = 'Fichier CSS';
+		$strings['ThemeUploadSuccess'] = 'Modifications enregistrées.Rafraichir la page pour que celles-ci soient effectives.';
+		$strings['MakeDefaultSchedule'] = 'En faire mon planning par défaut';
+		$strings['DefaultScheduleSet'] = 'C\'est maintenant votre planning par défaut';
+		$strings['FlipSchedule'] = 'Tourner le planning';
+		$strings['Next'] = 'Suivant';
+		$strings['Success'] = 'Success';
+		$strings['Participant'] = 'Participant';
+		$strings['ResourceFilter'] = 'Filtrage des ressources';
+		$strings['ResourceGroups'] = 'Groupes de ressources';
+		$strings['AddNewGroup'] = 'Ajouter un nouveau Groupe';
+		$strings['Quit'] = 'Quitter';
+		$strings['AddGroup'] = 'Ajouter un Groupe';
+		$strings['StandardScheduleDisplay'] = 'Affichage Standard';
+		$strings['TallScheduleDisplay'] = 'Affichage Haut';
+		$strings['WideScheduleDisplay'] = 'Affichage Large';
+		$strings['CondensedWeekScheduleDisplay'] = 'Affichage semaine condensée';
+		$strings['ResourceGroupHelp1'] = 'Cliquez-Glissez des groupes de ressources pour réorganiser.';
+		$strings['ResourceGroupHelp2'] = 'Clic droit sur le nom de la ressource pour des actions complémentaires.';
+		$strings['ResourceGroupHelp3'] = 'Cliquez-Glissez des ressources pour les ajouter aux groupes.';
+		$strings['ResourceGroupWarning'] = 'en cas d\'utilisation de groupe de ressources,chaque ressources doit être rattachée au moins à un groupe. Les resssources non assignées ne pourront être réservées.';
+		$strings['ResourceType'] = 'Type de ressource';
+		$strings['AppliesTo'] = 'Appliquer à';
+		$strings['UniquePerInstance'] = 'Unique Par Instance';
+		$strings['AddResourceType'] = 'Ajouter un Type de Ressource';
+		$strings['NoResourceTypeLabel'] = '(aucun type de ressource)';
+		$strings['ClearFilter'] = 'Effacer le filtre';
+		$strings['MinimumCapacity'] = 'Capacité Minimum';
+		$strings['Color'] = 'Couleur';
+		$strings['Available'] = 'Disponible';
+		$strings['Unavailable'] = 'Indisponible';
+		$strings['Hidden'] = 'Caché';
+		$strings['ResourceStatus'] = 'Statut de le ressource';
+		$strings['CurrentStatus'] = 'Statut en cours';
+		$strings['AllReservationResources'] = 'Toutes les ressources reservables';
+		$strings['File'] = 'Fichier';
+		$strings['BulkResourceUpdate'] = 'Mise à jour en masse des ressources';
+		$strings['Unchanged'] = 'Inchangé';
+		$strings['Common'] = 'Commun';
+		$strings['AdvancedFilter'] = 'Filtre avancé';
+		$strings['AllParticipants'] = 'Tous les participants';
+		$strings['ResourceAvailability'] = 'Disponibilité de la Ressource';
+		$strings['UnavailableAllDay'] = 'Indiponible tous les jours';
+		$strings['AvailableUntil'] = 'Disponible Jusqu\'a ';
+		$strings['AvailableBeginningAt'] = 'Diponible à partir de ';
+		$strings['AllowParticipantsToJoin'] = 'Permettre aux participant de rejoindre';
+		$strings['JoinThisReservation'] = 'Rejoindre la réservation';
+		// End Strings
+
+		// Install
+		$strings['InstallApplication'] = 'Installer Booked Scheduler (MySQL exclusivement)';
+		$strings['IncorrectInstallPassword'] = 'Désolé, le mot de passe est incorrect.';
+		$strings['SetInstallPassword'] = 'Vous devez parametrer un mot de passe d\'installation avant que celle-ci puisse être lancée.';
+		$strings['InstallPasswordInstructions'] = 'Dans %s  Parametrez %s avec un mot de passe difficile à trouver voire aléatoire, et retournez à cette page.<br/>Vous pouvez utiliser %s';
+		$strings['NoUpgradeNeeded'] = 'Pas de MAJ requise.Lancer l\'installation effacera les données existantes et installera une nouvelle copie de Booked Scheduler!';
+		$strings['ProvideInstallPassword'] = 'Merci de fournir le mot de passe d\'installation.';
+		$strings['InstallPasswordLocation'] = 'Est trouvable a %s dans %s.';
+		$strings['VerifyInstallSettings'] = 'Verifier les parametrages par défaut suivants avavnt de continuer. Vous pouvez aussi les modifier dans %s.';
+		$strings['DatabaseName'] = 'Nom de la Base';
+		$strings['DatabaseUser'] = 'Utilisateur de la Base';
+		$strings['DatabaseHost'] = 'Host de la Base';
+		$strings['DatabaseCredentials'] = 'Vous devez fournir un utilisateur MySQL ayant les droits pour créér des bases. En cas de doute, contactez votre administrateur de base. Très souvent, \"root\" fonctionne.';
+		$strings['MySQLUser'] = 'Utilisateur MySQL';
+		$strings['InstallOptionsWarning'] = 'Les options suivantes peuvent potentiellement ne pas fonctionner chez un hebergeur. Si c\'est le cas, utiliser l\'assistant MySQL pour réussir ces étapes.';
+		$strings['CreateDatabase'] = 'Créer la base';
+		$strings['CreateDatabaseUser'] = 'Créer l\'utilisateur de la base';
+		$strings['PopulateExampleData'] = 'Importer des données de test. Crée un compte admin : admin/password et un compte utilisateur: user/password';
+		$strings['DataWipeWarning'] = 'Attention: Les données existantes vont être effacées';
+		$strings['RunInstallation'] = 'Lancer  l\'Installation';
+		$strings['UpgradeNotice'] = 'Vous allez passer de la version <b>%s</b> à la version <b>%s</b>';
+		$strings['RunUpgrade'] = 'Lancer la mise à jour';
+		$strings['Executing'] = 'Execution';
+		$strings['StatementFailed'] = 'Erreur. Details:';
+		$strings['SQLStatement'] = 'instruction SQL:';
+		$strings['ErrorCode'] = 'Code Erreur:';
+		$strings['ErrorText'] = 'Text de l\'erreur:';
+		$strings['InstallationSuccess'] = 'Installation réussie!';
+		$strings['RegisterAdminUser'] = 'Enregister votre utilisateur admin. Obligatoire si vous n\'avez pas importé les données de test. Assurez vous que $conf[\'settings\'][\'allow.self.registration\'] = \'true\' est dans votre fichier %s .';
+		$strings['LoginWithSampleAccounts'] = 'Si vous avez  importé les données de test, vous pouvez vous connecter avec \"admin/password\' pour l\'utilisateur admin ou \"user/password\" pour l\'utilisateur de base.';
+		$strings['InstalledVersion'] = 'Vous avez maintenant la version %s de Booked Scheduler';
+		$strings['InstallUpgradeConfig'] = 'Il est recommandé de mettre à jour votre fichier de configuration';
+		$strings['InstallationFailure'] = 'Il y eu des problèmes lors de l\'installation. Corrigez les et rééssayez.';
+		$strings['ConfigureApplication'] = 'Configurer Booked Scheduler';
+		$strings['ConfigUpdateSuccess'] = 'Votre fichier de configuration est maintenant à jour!';
+		$strings['ConfigUpdateFailure'] = 'Nous ne pouvons mettre à jour automatiquement votre fichier de configurationWe . Ecrasez le contenu de \"config.php\" avec :';
+		$strings['SelectUser'] = 'Selectionner l\'utilisateur';
+		// End Install
 
 
 
@@ -573,5 +695,3 @@ class fr_fr extends en_us
         return 'fr';
     }
 }
-
-?>

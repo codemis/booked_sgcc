@@ -280,22 +280,39 @@ function Reservation(opts)
 		var resourceIdHdn = resourceNames.find('.resourceId');
 		var resourceId = resourceIdHdn.val();
 
-		var checkboxes = elements.resourceGroupsDialog.find('.additionalResourceCheckbox:checked');
+		var allCheckboxes = elements.resourceGroupsDialog.find('.additionalResourceCheckbox:checked');
+
+		var checkboxes = [];
+		var addedResources = [];
+		$.each(allCheckboxes, function (i, checkbox){
+			var checkedResourceId = $(checkbox).attr('resource-id');
+			if (addedResources.indexOf(checkedResourceId) === -1)
+			{
+				checkboxes.push(checkbox);
+				addedResources.push(checkedResourceId);
+			}
+		});
 
 		if (checkboxes.length >= 1)
 		{
 			resourceNames.find('.resourceDetails').text($(checkboxes[0]).parent().text());
 			resourceIdHdn.val($(checkboxes[0]).attr('resource-id'));
 		}
+
 		if (checkboxes.length > 1)
 		{
 			$.each(checkboxes, function (i, checkbox)
 			{
+				var checkedResourceId = $(checkbox).attr('resource-id');
+				var checkedResourceName = $(checkbox).parent().text();
+
 				if (i == 0)
 				{
+					resourceNames.find('.resourceDetails').text(checkedResourceName);
+					resourceIdHdn.val(checkedResourceId);
 					return true;
 				}
-				displayDiv.append('<p><a href="#" class="resourceDetails">' + $(checkbox).parent().text() + '</a><input class="resourceId" type="hidden" name="additionalResources[]" value="' + $(checkbox).attr('resource-id') + '"/></p>');
+				displayDiv.append('<p><a href="#" class="resourceDetails">' + checkedResourceName + '</a><input class="resourceId" type="hidden" name="additionalResources[]" value="' + checkedResourceId + '"/></p>');
 			});
 
 		}
@@ -319,6 +336,12 @@ function Reservation(opts)
 	var handleAdditionalResourceChecked = function (checkbox, event)
 	{
 		var isChecked = checkbox.is(':checked');
+
+		if (!isChecked && checkbox[0].hasAttribute('resource-id'))
+		{
+			var resourceId = checkbox.attr('resource-id');
+			elements.groupDiv.find('.additionalResourceCheckbox[resource-id="' + resourceId + '"]').attr('checked', false);
+		}
 
 		if (!checkbox[0].hasAttribute('resource-id'))
 		{
@@ -503,7 +526,7 @@ function Reservation(opts)
 
 			var newTime = dateHelper.AddTimeDiff(diff,elements.endTime.val());
 
-			console.log(newTime);
+			//console.log(newTime);
 			elements.endTime.val(newTime);
 			elements.beginTime.data['beginTimePreviousVal'] = elements.beginTime.val();
 
@@ -710,6 +733,7 @@ function Reservation(opts)
 	changeUser.chooseUser = function (id, name)
 	{
 		elements.userName.text(name);
+		elements.userName.attr('data-userid', id);
 		elements.userId.val(id);
 
 		participation.removeParticipant(_ownerId);
@@ -759,13 +783,13 @@ function Reservation(opts)
 		}
 
 		var item = '<li>' +
-				'<a href="#" class="remove"><img src="img/user-minus.png" alt="Remove"/></a> ' +
+				'<a href="#" class="remove"><img src="img/user-minus.png" alt="Remove"/></a> <a href="#" class="bindableUser" data-userid="' + userId + '">' +
 				name +
-				'<input type="hidden" class="id" name="participantList[]" value="' + userId + '" />' +
+				'</a><input type="hidden" class="id" name="participantList[]" value="' + userId + '" />' +
 				'</li>';
 
 		elements.participantList.find("ul").append(item);
-
+		$('.bindableUser').bindUserDetails();
 		participation.addedUsers.push(userId);
 	};
 
@@ -787,13 +811,13 @@ function Reservation(opts)
 		}
 
 		var item = '<li>' +
-				'<a href="#" class="remove"><img src="img/user-minus.png" alt="Remove"/></a> ' +
+				'<a href="#" class="remove"><img src="img/user-minus.png" alt="Remove"/></a> <a href="#" class="bindableUser" data-userid="' + userId + '">' +
 				name +
-				'<input type="hidden" class="id" name="invitationList[]" value="' + userId + '" />' +
+				'</a><input type="hidden" class="id" name="invitationList[]" value="' + userId + '" />' +
 				'</li>';
 
 		elements.inviteeList.find("ul").append(item);
-
+		$('.bindableUser').bindUserDetails();
 		participation.addedUsers.push(userId);
 	};
 

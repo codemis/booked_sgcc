@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -102,7 +102,8 @@ class ManageAttributesPage extends ActionPage implements IManageAttributesPage
 							CustomAttributeTypes::SINGLE_LINE_TEXTBOX => 'SingleLineTextbox',
 							CustomAttributeTypes::MULTI_LINE_TEXTBOX => 'MultiLineTextbox',
 							CustomAttributeTypes::CHECKBOX => 'Checkbox',
-							CustomAttributeTypes::SELECT_LIST => 'SelectList'
+							CustomAttributeTypes::SELECT_LIST => 'SelectList',
+							CustomAttributeTypes::DATETIME => 'DateTime',
 						);
 
 		$this->Set('Types', $typeLookup);

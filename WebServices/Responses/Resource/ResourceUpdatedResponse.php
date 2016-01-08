@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2013-2014 Nick Korbel
+Copyright 2013-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -46,5 +46,3 @@ class ExampleResourceUpdatedResponse extends ResourceUpdatedResponse
 		$this->AddLink('http://url/to/update/resource', WebServices::UpdateResource);
 	}
 }
-
-?>

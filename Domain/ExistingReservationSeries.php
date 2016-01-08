@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -496,7 +496,6 @@ class ExistingReservationSeries extends ReservationSeries
 
 	/**
 	 * @param int $inviteeId
-	 * @return void
 	 */
 	public function AcceptInvitation($inviteeId)
 	{
@@ -513,7 +512,6 @@ class ExistingReservationSeries extends ReservationSeries
 
 	/**
 	 * @param int $inviteeId
-	 * @return void
 	 */
 	public function DeclineInvitation($inviteeId)
 	{
@@ -530,7 +528,6 @@ class ExistingReservationSeries extends ReservationSeries
 
 	/**
 	 * @param int $participantId
-	 * @return void
 	 */
 	public function CancelAllParticipation($participantId)
 	{
@@ -547,11 +544,48 @@ class ExistingReservationSeries extends ReservationSeries
 
 	/**
 	 * @param int $participantId
-	 * @return void
 	 */
 	public function CancelInstanceParticipation($participantId)
 	{
 		if ($this->CurrentInstance()->CancelParticipation($participantId))
+		{
+			$this->RaiseInstanceUpdatedEvent($this->CurrentInstance());
+		}
+	}
+
+	/**
+	 * @param int $participantId
+	 */
+	public function JoinReservationSeries($participantId)
+	{
+		if (!$this->GetAllowParticipation())
+		{
+			return;
+		}
+
+		/** @var Reservation $instance */
+		foreach ($this->Instances() as $instance)
+		{
+			$joined = $instance->JoinReservation($participantId);
+			if ($joined)
+			{
+				$this->RaiseInstanceUpdatedEvent($instance);
+			}
+		}
+	}
+
+	/**
+	 * @param int $participantId
+	 */
+	public function JoinReservation($participantId)
+	{
+		if (!$this->GetAllowParticipation())
+		{
+			return;
+		}
+
+		$joined = $this->CurrentInstance()->JoinReservation($participantId);
+		if ($joined)
 		{
 			$this->RaiseInstanceUpdatedEvent($this->CurrentInstance());
 		}

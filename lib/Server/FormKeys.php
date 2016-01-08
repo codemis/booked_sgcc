@@ -1,17 +1,17 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
-This file is part of Booked SchedulerBooked SchedulereIt is free software: you can redistribute it and/or modify
+This file is part of Booked Scheduler is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
-(at your option) any later versBooked SchedulerduleIt is distributed in the hope that it will be useful,
+(at your option) any later version is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-alBooked SchedulercheduleIt.  If not, see <http://www.gnu.org/licenses/>.
+along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 class FormKeys
@@ -28,6 +28,7 @@ class FormKeys
 	const ADDRESS = 'address';
 	const ALLOW_CALENDAR_SUBSCRIPTIONS = 'ALLOW_CALENDAR_SUBSCRIPTIONS';
 	const ALLOW_MULTIDAY = 'allowMultiday';
+	const ALLOW_PARTICIPATION = 'ALLOW_PARTICIPATION';
 	const ANNOUNCEMENT_TEXT = 'announcementText';
 	const ANNOUNCEMENT_START = 'announcementStart';
 	const ANNOUNCEMENT_END = 'announcementEnd';
@@ -58,6 +59,7 @@ class FormKeys
 	const CONFLICT_ACTION = 'conflictAction';
 	const CONTACT_INFO = 'contactInfo';
 	const CSS_FILE = 'CSS_FILE';
+	const CSRF_TOKEN = 'CSRF_TOKEN';
 	const CURRENT_PASSWORD = 'currentPassword';
 
 	const DEFAULT_HOMEPAGE = 'defaultHomepage';
@@ -111,6 +113,7 @@ class FormKeys
 
 	const PARENT_ID = 'PARENT_ID';
 	const PARTICIPANT_LIST = 'participantList';
+	const PARTICIPANT_ID = 'PARTICIPANT_ID';
 	const PASSWORD = 'password';
 	const PASSWORD_CONFIRM = 'passwordConfirm';
 	const PERSIST_LOGIN = 'persistLogin';
@@ -184,6 +187,7 @@ class FormKeys
 	const UNIT_COST = 'unitCost';
 	const USER_ID = 'userId';
 	const USERNAME = 'username';
+	const USER_IMPORT_FILE = 'USER_IMPORT_FILE';
 	const USING_SINGLE_LAYOUT = 'USING_SINGLE_LAYOUT';
 
 	public static function Evaluate($formKey)

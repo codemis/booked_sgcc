@@ -1,17 +1,17 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
-This file is part of Booked SchedulerBooked SchedulereIt is free software: you can redistribute it and/or modify
+This file is part of Booked Scheduler is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
-(at your option) any later versBooked SchedulerduleIt is distributed in the hope that it will be useful,
+(at your option) any later version is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-alBooked SchedulercheduleIt.  If not, see <http://www.gnu.org/licenses/>.
+along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 class Report_Filter
@@ -34,6 +34,11 @@ class Report_Filter
 	/**
 	 * @var int|null
 	 */
+	private $participantId;
+
+	/**
+	 * @var int|null
+	 */
 	private $groupId;
 
 	/**
@@ -42,14 +47,16 @@ class Report_Filter
 	 * @param $userId int|null
 	 * @param $groupId int|null
 	 * @param $accessoryId int|null
+	 * @param $participantId int|null
 	 */
-	public function __construct($resourceId, $scheduleId, $userId, $groupId, $accessoryId)
+	public function __construct($resourceId, $scheduleId, $userId, $groupId, $accessoryId, $participantId)
 	{
 		$this->resourceId = $resourceId;
 		$this->scheduleId = $scheduleId;
 		$this->userId = $userId;
 		$this->groupId = $groupId;
 		$this->accessoryId = $accessoryId;
+		$this->participantId = $participantId;
 	}
 
 	public function Add(ReportCommandBuilder $builder)
@@ -65,6 +72,10 @@ class Report_Filter
 		if (!empty($this->userId))
 		{
 			$builder->WithUserId($this->userId);
+		}
+		if (!empty($this->participantId))
+		{
+			$builder->WithParticipantId($this->participantId);
 		}
 		if (!empty($this->groupId))
 		{
@@ -98,6 +109,13 @@ class Report_Filter
 	public function UserId()
 	{
 		return $this->userId;
+	}
+	/**
+	 * @return int|null
+	 */
+	public function ParticipantId()
+	{
+		return $this->participantId;
 	}
 
 	/**

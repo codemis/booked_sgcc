@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 Translation: 2014 Nicola Ruggero <nicola@nxnt.org>
 
@@ -18,13 +18,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
-{include file='..\..\tpl\Email\emailheader.tpl'}
+
 
 	Dettagli prenotazione:
 	<br/>
 	<br/>
 
 	Utente: {$UserName}<br/>
+	{if !empty($CreatedBy)}
+		Creato da: {$CreatedBy}
+		<br/>
+	{/if}
 	Inizio: {formatdate date=$StartDate key=reservation_email}<br/>
 	Fine: {formatdate date=$EndDate key=reservation_email}<br/>
 	{if $ResourceNames|count > 1}
@@ -35,6 +39,11 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		{else}
 		Risorsa: {$ResourceName}<br/>
 	{/if}
+
+	{if $ResourceImage}
+		<div class="resource-image"><img src="{$ScriptUrl}/{$ResourceImage}"/></div>
+	{/if}
+
 	Note: {$Title}<br/>
 	Descrizione: {$Description}<br/>
 
@@ -71,4 +80,3 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 	<br/>
 	<a href="{$ScriptUrl}/{$ReservationUrl}">Vedi questa prenotazione</a> | <a href="{$ScriptUrl}">Accedi a Booked Scheduler</a>
 
-{include file='..\..\tpl\Email\emailfooter.tpl'}
