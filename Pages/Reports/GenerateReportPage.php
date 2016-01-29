@@ -262,7 +262,6 @@ class GenerateReportPage extends ActionPage implements IGenerateReportPage
 
 	public function BindReport(IReport $report, IReportDefinition $definition)
 	{
-		$this->Set('singleDate', $this->isSingleDate($report->GetData()->Rows()));
 		$this->Set('Definition', $definition);
 		$this->Set('Report', $report);
 	}
@@ -303,33 +302,6 @@ class GenerateReportPage extends ActionPage implements IGenerateReportPage
 	public function GetReportName()
 	{
 		return $this->GetForm(FormKeys::REPORT_NAME);
-	}
-
-	/**
-	 * Check if we are only reporting a single day
-	 *
-	 * @param  array  	$data 	The data from the report
-	 * @return string       	A date if it is a single date, an empty string if not
-	 * @access private
-	 *
-	 * @author Johnathan Pulos <johnathan@missionaldigerati.org>
-	 */
-	private function isSingleDate($data)
-	{
-		$sameDay = true;
-		$firstDate = new DateTime($data['start_date']);
-		$formattedFirstDate = $firstDate->format('Y-m-d');
-		foreach ($data as $row) {
-			$currentDate = new DateTime($row['start_date']);
-			if ($formattedFirstDate !== $currentDate->format('Y-m-d')) {
-				$sameDay = false;
-			}
-		}
-		if ($sameDay) {
-			return $formattedFirstDate;
-		} else {
-			return '';
-		}
 	}
 
 	private function GetValue($key)

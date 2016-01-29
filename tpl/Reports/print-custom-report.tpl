@@ -21,41 +21,23 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 <head>
 	<title>{if $TitleKey neq ''}{translate key=$TitleKey args=$TitleArgs}{else}{$Title}{/if}</title>
 	<meta http-equiv="Content-Type" content="text/html; charset={$Charset}"/>
-	<link rel="stylesheet" type="text/css" media="print,screen" href="/Web/custom/css/report-print.css">
 </head>
 <body>
-{if $singleDate != ''}
-	<div class="single-date">
-		{$singleDate|date_format:"%B %e, %G"}
-	</div>
-{/if}
+{translate key=Created}: {format_date date=Date::Now() key=general_datetime}
 <table width="100%" border="1">
 	<tr>
-		<th data-columnTitle="Resource">Resource</th>
-		<th data-columnTitle="Start">Start</th>
-		<th data-columnTitle="End">End</th>
-		<th data-columnTitle="Title">Title</th>
-		<th data-columnTitle="Description">Description</th>
+		{foreach from=$Definition->GetColumnHeaders() item=column}
+			{capture name="columnTitle"}{if $column->HasTitle()}{$column->Title()}{else}{translate key=$column->TitleKey()}{/if}{/capture}
+			<th data-columnTitle="{$smarty.capture.columnTitle}">
+				{$smarty.capture.columnTitle}
+			</th>
+		{/foreach}
 	</tr>
 	{foreach from=$Report->GetData()->Rows() item=row}
 		<tr>
-			<td>{$row['resource_name']}</td>
-			<td>
-				{if $singleDate != ''}
-					{$row['start_date']|date_format:"%l:%M %p"}
-				{else}
-					{$row['start_date']}
-				{/if}
-			</td>
-			<td>
-				{if $singleDate != ''}
-					{$row['end_date']|date_format:"%l:%M %p"}
-				{else}
-					{$row['end_date']}
-				{/if}
-			</td>
-			<td>{$row['title']}</td>
-			<td>{$row['description']}</td>
+			{foreach from=$Definition->GetRow($row) item=data}
+				<td>{$data->Value()|escape}&nbsp;</td>
+			{/foreach}
 		</tr>
 	{/foreach}
 </table>
@@ -64,7 +46,6 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 	| {$Definition->GetTotal()} {translate key=Total}
 {/if}
 
-<p>{translate key=Created}: {format_date date=Date::Now() key=general_datetime}</p>
 {jsfile src="reports/common.js"}
 
 <script type="text/javascript">
