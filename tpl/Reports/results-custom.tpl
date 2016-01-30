@@ -22,6 +22,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		{if !$HideSave}<a href="#" id="btnSaveReportPrompt">{html_image src="disk-black.png"}{translate key=SaveThisReport}</a> | {/if}
 		<a href="#" id="btnCsv">{html_image src="table-export.png"}{translate key=ExportToCSV}</a> |
 		<a href="#" id="btnPrint">{html_image src="printer.png"}{translate key=Print}</a> |
+		<a href="#" id="btnMaintenanceUrl">{html_image src="printer.png"}{translate key=PrintMaintenance}</a> |
 		<a href="#" id="btnCustomizeColumns">{html_image src="funnel.png"}Columns</a>
 	</div>
 	<div id="customize-columns"></div>

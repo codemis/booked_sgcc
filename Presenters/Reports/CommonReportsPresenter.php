@@ -50,6 +50,7 @@ class CommonReportsPresenter extends ActionPresenter
 		$this->AddAction(ReportActions::Email, 'EmailReport');
 		$this->AddAction(ReportActions::Csv, 'CreateCsv');
 		$this->AddAction(ReportActions::PrintReport, 'PrintReport');
+		$this->AddAction(ReportActions::PrintMaintenanceReport, 'PrintMaintenanceReport');
 		$this->AddAction(ReportActions::Delete, 'DeleteReport');
 	}
 
@@ -104,6 +105,11 @@ class CommonReportsPresenter extends ActionPresenter
 	public function PrintReport()
 	{
 		$this->GenerateAndDisplay(array($this->page, 'PrintReport'));
+	}
+
+	public function PrintMaintenanceReport()
+	{
+		$this->GenerateAndDisplay(array($this->page, 'PrintMaintenanceReport'));
 	}
 
 	public function EmailReport()

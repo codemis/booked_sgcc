@@ -55,6 +55,13 @@ function GenerateReports(reportOptions) {
 			window.open(url);
 		});
 
+		$(document).on('click', '#btnMaintenanceUrl',function (e) {
+			e.preventDefault();
+
+			var url = opts.printMaintenanceUrl + elements.customReportForm.serialize();
+			window.open(url);
+		});
+
 		$(document).on('click', '#btnCsv', function (e) {
 			e.preventDefault();
 

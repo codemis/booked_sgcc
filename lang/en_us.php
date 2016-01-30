@@ -135,6 +135,7 @@ class en_us extends Language
 		$strings['AllInstances'] = 'All Instances';
 		$strings['FutureInstances'] = 'Future Instances';
 		$strings['Print'] = 'Print';
+		$strings['PrintMaintenance'] = 'Print Maintenance Report';
 		$strings['ShowHideNavigation'] = 'Show/Hide Navigation';
 		$strings['ReferenceNumber'] = 'Reference Number';
 		$strings['Tomorrow'] = 'Tomorrow';

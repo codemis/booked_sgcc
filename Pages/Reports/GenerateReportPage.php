@@ -264,6 +264,7 @@ class GenerateReportPage extends ActionPage implements IGenerateReportPage
 	{
 		$this->Set('Definition', $definition);
 		$this->Set('Report', $report);
+		$this->Set('singleDate', $this->isSingleDate($report, $definition));
 	}
 
 	/**
@@ -334,6 +335,43 @@ class GenerateReportPage extends ActionPage implements IGenerateReportPage
 	public function PrintReport()
 	{
 		$this->Display('Reports/print-custom-report.tpl');
+	}
+
+	public function PrintMaintenanceReport()
+	{
+		$this->Display('Reports/print-maintenance-report.tpl');
+	}
+
+	/**
+	 * Check if we are only reporting a single day
+	 * @param  IReport				$report 	The reporting object
+	 * @param  IReportDefinition	$definition The Reporting Definition Object
+	 * @return string       	A date if it is a single date, an empty string if not
+	 * @access private
+	 *
+	 * @author Johnathan Pulos <johnathan@missionaldigerati.org>
+	 */
+	private function isSingleDate(IReport $report, IReportDefinition $definition)
+	{
+		$data = $report->GetData()->Rows();
+		$startDates = [];
+		foreach ($data as $row) {
+			$i = 0;
+			foreach ($definition->GetRow($row) as $item) {
+				if ($i === 1) {
+					$current = new DateTime($item->Value());
+					if (!in_array($current->format('Y-m-d'), $startDates)) {
+						array_push($startDates, $current->format('Y-m-d'));
+					}
+				}
+				$i++;
+			}
+		}
+		if ((count($startDates) === 1)) {
+			return $startDates[0];
+		} else {
+			return '';
+		}
 	}
 
 	/**
