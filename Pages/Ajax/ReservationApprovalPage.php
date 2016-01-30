@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -37,6 +37,7 @@ class ReservationApprovalPage extends SecurePage implements IReservationApproval
 	{
 		try
 		{
+			$this->EnforceCSRFCheck();
 			$reservationAction = ReservationAction::Approve;
 			$factory = new ReservationPersistenceFactory();
 			$persistenceService = $factory->Create($reservationAction);

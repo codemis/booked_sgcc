@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -211,6 +211,8 @@ class SchedulePage extends ActionPage implements ISchedulePage
 {
 	protected $ScheduleStyle = ScheduleStyle::Standard;
 
+	private $resourceCount = 0;
+
 	/**
 	 * @var SchedulePresenter
 	 */
@@ -221,6 +223,11 @@ class SchedulePage extends ActionPage implements ISchedulePage
 		ScheduleStyle::Tall => 'Schedule/schedule-flipped.tpl',
 		ScheduleStyle::CondensedWeek => 'Schedule/schedule-week-condensed.tpl',
 	);
+
+	/**
+	 * @var bool
+	 */
+	private $_isFiltered = true;
 
 	public function __construct()
 	{
@@ -241,12 +248,16 @@ class SchedulePage extends ActionPage implements ISchedulePage
 	{
 		$start = microtime(true);
 
-		$user = ServiceLocator::GetServer()
-				->GetUserSession();
+		$user = ServiceLocator::GetServer()->GetUserSession();
 
 		$this->_presenter->PageLoad($user);
 
 		$endLoad = microtime(true);
+
+		if ($user->IsAdmin && $this->resourceCount == 0 && !$this->_isFiltered)
+		{
+			$this->Set('ShowResourceWarning', true);
+		}
 
 		$this->Set('SlotLabelFactory', $user->IsAdmin ? new AdminSlotLabelFactory() : new SlotLabelFactory($user));
 		$this->Set('DisplaySlotFactory', new DisplaySlotFactory());
@@ -265,6 +276,7 @@ class SchedulePage extends ActionPage implements ISchedulePage
 		$load = $endLoad - $start;
 		$display = $endDisplay - $endLoad;
 		$total = $endDisplay - $start;
+
 		Log::Debug('Schedule took %s sec to load, %s sec to render. Total %s sec', $load, $display, $total);
 	}
 
@@ -301,6 +313,7 @@ class SchedulePage extends ActionPage implements ISchedulePage
 
 	public function SetResources($resources)
 	{
+		$this->resourceCount = count($resources);
 		$this->Set('Resources', $resources);
 	}
 
@@ -449,6 +462,7 @@ class SchedulePage extends ActionPage implements ISchedulePage
 		$this->Set('ResourceIdFilter', $this->GetResourceId());
 		$this->Set('ResourceTypeIdFilter', $resourceFilter->ResourceTypeId);
 		$this->Set('MaxParticipantsFilter', $resourceFilter->MinCapacity);
+		$this->_isFiltered = $resourceFilter->HasFilter();
 	}
 
 	public function SetSubscriptionUrl(CalendarSubscriptionUrl $subscriptionUrl)

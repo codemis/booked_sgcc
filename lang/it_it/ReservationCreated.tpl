@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 Translation: 2014 Nicola Ruggero <nicola@nxnt.org>
 
@@ -18,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
-{include file='..\..\tpl\Email\emailheader.tpl'}
+
 
 	Dettagli prenotazione:
 	<br/>
@@ -33,6 +33,10 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		{/foreach}
 		{else}
 		Risorsa: {$ResourceName}<br/>
+	{/if}
+
+	{if $ResourceImage}
+		<div class="resource-image"><img src="{$ScriptUrl}/{$ResourceImage}"/></div>
 	{/if}
 
 	Note: {$Title}<br/>
@@ -67,9 +71,14 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		Una o più risorse in cui è stata inserita la prenotazione richiedono un'approvazione prima dell'utilizzo. Questa prenotazione rimarrà in sospeso fino all'approvazione.
 	{/if}
 
-        {if !empty($ApprovedBy)}
+	{if !empty($ApprovedBy)}
 		<br/>
 		Approvato da: {$ApprovedBy}
+	{/if}
+
+	{if !empty($CreatedBy)}
+		<br/>
+		Creato da: {$CreatedBy}
 	{/if}
 
 	<br/>
@@ -78,4 +87,3 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 	<a href="{$ScriptUrl}/{$ICalUrl}">Aggiungi al calendario</a> |
 	<a href="{$ScriptUrl}">Accedi a Booked Scheduler</a>
 
-{include file='..\..\tpl\Email\emailfooter.tpl'}

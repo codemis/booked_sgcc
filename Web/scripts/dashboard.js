@@ -17,17 +17,25 @@ function Dashboard(opts)
 				var id = dashboard.parent().attr('id');
 				if (dashboard.css('display') == 'none')
 				{
-					createCookie(id,'1',30);
+					createCookie(id,'1',30, opts.scriptUrl);
 					dashboard.show();
 				}
 				else
 				{
-					createCookie(id,'0',30);
+					createCookie(id,'0',30, opts.scriptUrl);
 					dashboard.hide();
 				}
 			});
 		});
-		
+
+		$('.resourceNameSelector').each(function ()
+		{
+			$(this).bindResourceDetails($(this).attr('resource-id'));
+			$(this).click(function(e){
+				e.preventDefault();
+			});
+		});
+
 		$(".reservation").each(function() {
 			var refNum = $(this).attr('id');
 

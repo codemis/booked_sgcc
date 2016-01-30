@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2013-2014 Nick Korbel
+Copyright 2013-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -119,7 +119,7 @@ class ResourcesWriteWebService
 	 */
 	public function Delete($resourceId)
 	{
-		Log::Debug('ResourcesWriteWebService.Delete() Resource=%s', $this->server->GetSession()->UserId);
+		Log::Debug('ResourcesWriteWebService.Delete() Resource=%s, UserId=%s', $resourceId, $this->server->GetSession()->UserId);
 
 		$result = $this->controller->Delete($resourceId, $this->server->GetSession());
 
@@ -139,5 +139,3 @@ class ResourcesWriteWebService
 		}
 	}
 }
-
-?>

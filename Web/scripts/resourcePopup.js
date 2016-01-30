@@ -1,5 +1,5 @@
 /**
- Copyright 2012-2014 Nick Korbel
+ Copyright 2012-2015 Nick Korbel
 
  This file is part of Booked Scheduler.
 
@@ -21,6 +21,7 @@ $.fn.bindResourceDetails = function (resourceId, options)
 {
 	var opts = $.extend({preventClick:false}, options);
 
+	$(this).removeAttr('resource-details-bound');
 	bindResourceDetails($(this));
 
 	function getDiv()

@@ -1,6 +1,10 @@
 // Cookie functions from http://www.quirksmode.org/js/cookies.html //
-function createCookie(name, value, days) 
+function createCookie(name, value, days, path)
 {
+	if (!path)
+	{
+		path = '/';
+	}
 	if (days) 
 	{
 		var date = new Date();
@@ -11,7 +15,7 @@ function createCookie(name, value, days)
 	{
 		var expires = "";
 	}
-	document.cookie = name+"="+value+expires+"; path=/";
+	document.cookie = name+"="+value+expires+"; path=" + path;
 }
 
 function readCookie(name) 

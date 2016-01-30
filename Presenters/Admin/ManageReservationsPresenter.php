@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -300,6 +300,15 @@ class ManageReservationsPresenter extends ActionPresenter
 
 			$rv = $this->manageReservationsService->LoadByReferenceNumber($referenceNumber, ServiceLocator::GetServer()->GetUserSession());
 			$this->page->SetReservationJson($rv);
+		}
+
+		if ($dataRequest == 'attribute')
+		{
+			$referenceNumber = $this->page->GetReferenceNumber();
+			$rv = $this->manageReservationsService->LoadByReferenceNumber($referenceNumber, ServiceLocator::GetServer()->GetUserSession());
+			$attributeId = $this->page->GetAttributeId();
+			$attribute = $this->attributeService->GetById($attributeId);
+			$this->page->ShowAttribute($attribute, $rv->GetAttributeValue($attributeId));
 		}
 	}
 

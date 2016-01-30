@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -24,15 +24,17 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {/foreach}
 </ul>
 
-<script type="text/javascript" src="scripts/js/jquery.qtip.min.js"></script>
-<script type="text/javascript" src="{$Path}scripts/dashboard.js"></script>
+{jsfile src="js/jquery.qtip.min.js"}
+{jsfile src="dashboard.js"}
+{jsfile src="resourcePopup.js"}
 
 <script type="text/javascript">
 $(document).ready(function() {
 
 	var dashboardOpts = {
 		reservationUrl: "{Pages::RESERVATION}?{QueryStringKeys::REFERENCE_NUMBER}=",
-		summaryPopupUrl: "ajax/respopup.php"
+		summaryPopupUrl: "ajax/respopup.php",
+		scriptUrl: '{$ScriptUrl}'
 	};
 
 	var dashboard = new Dashboard(dashboardOpts);

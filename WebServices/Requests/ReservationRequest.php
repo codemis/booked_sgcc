@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -19,7 +19,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 require_once(ROOT_DIR . 'WebServices/Requests/ReservationAccessoryRequest.php');
-require_once(ROOT_DIR . 'WebServices/Requests/AttributeValueRequest.php');
+require_once(ROOT_DIR . 'WebServices/Requests/CustomAttributes/AttributeValueRequest.php');
 require_once(ROOT_DIR . 'WebServices/Responses/RecurrenceRequestResponse.php');
 require_once(ROOT_DIR . 'WebServices/Responses/ReminderRequestResponse.php');
 
@@ -64,6 +64,11 @@ class ReservationRequest
 	 */
 	public $endReminder;
 
+	/**
+	 * @var bool
+	 */
+	public $allowParticipation;
+
 	public static function Example()
 	{
 		$date = Date::Now()->ToIso();
@@ -81,9 +86,8 @@ class ReservationRequest
 		$request->title = 'reservation title';
 		$request->userId = 1;
 		$request->startReminder = ReminderRequestResponse::Example();
+		$request->allowParticipation = true;
 
 		return $request;
 	}
 }
-
-?>

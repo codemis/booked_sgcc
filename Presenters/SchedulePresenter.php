@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -88,7 +88,6 @@ class SchedulePresenter extends ActionPresenter implements ISchedulePresenter {
 
     public function PageLoad(UserSession $user)
     {
-
         $showInaccessibleResources = $this->_page->ShowInaccessibleResources();
 
         $schedules = $this->_scheduleService->GetAll($showInaccessibleResources, $user);
@@ -108,7 +107,7 @@ class SchedulePresenter extends ActionPresenter implements ISchedulePresenter {
         $this->_builder->BindSchedules($this->_page, $schedules, $currentSchedule);
 
         $scheduleDates = $this->_builder->GetScheduleDates($user, $currentSchedule, $this->_page);
-        $this->_builder->BindDisplayDates($this->_page, $scheduleDates, $user, $currentSchedule);
+        $this->_builder->BindDisplayDates($this->_page, $scheduleDates, $currentSchedule);
 
 		$resourceGroups = $this->_resourceService->GetResourceGroups($activeScheduleId, $user);
 		$this->_builder->BindResourceGroups($this->_page, $resourceGroups);
@@ -142,9 +141,7 @@ class SchedulePresenter extends ActionPresenter implements ISchedulePresenter {
 		$layout = $this->_scheduleService->GetLayout($scheduleId, new ScheduleLayoutFactory($user->Timezone));
 		$periods = $layout->GetLayout($requestedDate);
 
-		Log::Debug('Getting layout for scheduleId=%s, layoutDate=%s, periods=%s', $scheduleId, $layoutDate,var_export($periods, true));
+//		Log::Debug('Getting layout for scheduleId=%s, layoutDate=%s, periods=%s', $scheduleId, $layoutDate,var_export($periods, true));
 		$this->_page->SetLayoutResponse(new ScheduleLayoutSerializable($periods));
 	}
 }
-
-?>

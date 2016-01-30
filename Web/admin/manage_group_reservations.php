@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -36,6 +36,7 @@ class GroupAdminManageReservationsPage extends ManageReservationsPage
 					new UserPreferenceRepository());
 
 		$this->SetCanUpdateResourceStatus(false);
+		$this->SetPageId('manage-reservations-group-admin');
     }
 }
 

@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -70,7 +70,9 @@ class ManageAttributesPresenter extends ActionPresenter
         Log::Debug('Adding new attribute named: %s', $attributeName);
 
         $attribute = CustomAttribute::Create($attributeName, $type, $scope, $regex, $required, $possibleValues, $sortOrder, $entityId);
-		$this->attributeRepository->Add($attribute);
+		$attributeId = $this->attributeRepository->Add($attribute);
+
+		return $attributeId;
     }
 
 	public function DeleteAttribute()

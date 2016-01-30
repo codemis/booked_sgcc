@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2012-2014 Nick Korbel
+ * Copyright 2012-2015 Nick Korbel
  *
  * This file is part of Booked Scheduler.
  *
@@ -634,6 +634,14 @@ class ReservationRequestResponseFacade implements IReservationSavePage
 	public function GetEndReminderInterval()
 	{
 		return $this->request->endReminder->interval;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function GetAllowParticipation()
+	{
+		return $this->request->allowParticipation;
 	}
 }
 

@@ -112,6 +112,23 @@ class ManageConfigurationPresenter extends ActionPresenter
 				}
 			}
 		}
+
+		$this->PopulateHomepages();
+	}
+
+	private function PopulateHomepages()
+	{
+		$homepageValues = array();
+		$homepageOutput = array();
+
+		$pages = Pages::GetAvailablePages();
+		foreach ($pages as $pageid => $page)
+		{
+			$homepageValues[] = $pageid;
+			$homepageOutput[] = Resources::GetInstance()->GetString($page['name']);
+		}
+
+		$this->page->SetHomepages($homepageValues, $homepageOutput);
 	}
 
 	public function Update()
@@ -285,6 +302,11 @@ class ConfigSetting
 		$this->Value = $value . '';
 
 		$type = strtolower($value) == 'true' || strtolower($value) == 'false' ? ConfigSettingType::Boolean : ConfigSettingType::String;
+
+		if ($key == ConfigKeys::PRIVACY_HIDE_RESERVATION_DETAILS && $section == ConfigSection::PRIVACY)
+		{
+			$type = ConfigSettingType::String;
+		}
 
 		$this->Type = $type;
 

@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -20,7 +20,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once(ROOT_DIR . 'lib/WebService/namespace.php');
 require_once(ROOT_DIR . 'lib/Application/Attributes/namespace.php');
-require_once(ROOT_DIR . 'WebServices/Responses/CustomAttributesResponse.php');
+require_once(ROOT_DIR . 'WebServices/Responses/CustomAttributes/CustomAttributesResponse.php');
 
 class AttributesWebService
 {
@@ -43,7 +43,7 @@ class AttributesWebService
 	/**
 	 * @name GetCategoryAttributes
 	 * @description Gets all custom attribute definitions for the requested category
-	 * Categories are RESERVATION = 1, USER = 2, RESOURCE = 4
+	 * Categories are RESERVATION = 1, USER = 2, RESOURCE = 4, RESOURCE_TYPE = 5
 	 * @response CustomAttributesResponse
 	 * @return void
 	 * @param int $categoryId
@@ -76,5 +76,3 @@ class AttributesWebService
 		}
 	}
 }
-
-?>

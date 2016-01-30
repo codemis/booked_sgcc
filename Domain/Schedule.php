@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -244,4 +244,3 @@ class Schedule implements ISchedule
 		return new CalendarSubscriptionUrl(null, $this->GetPublicId(), null);
 	}
 }
-?>

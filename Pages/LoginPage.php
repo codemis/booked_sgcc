@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 Copyright 2012-2014 Alois Schloegl
 
 This file is part of Booked Scheduler.
@@ -25,19 +25,16 @@ require_once(ROOT_DIR . 'lib/Application/Authentication/namespace.php');
 interface ILoginPage extends IPage
 {
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetEmailAddress();
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetPassword();
 
 	/**
-	 * @abstract
 	 * @return bool
 	 */
 	public function GetPersistLogin();
@@ -49,13 +46,11 @@ interface ILoginPage extends IPage
 	public function SetShowScheduleLink($value);
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetSelectedLanguage();
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetRequestedLanguage();
@@ -65,7 +60,6 @@ interface ILoginPage extends IPage
 	public function SetResumeUrl($value);
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetResumeUrl();
@@ -73,34 +67,39 @@ interface ILoginPage extends IPage
 	public function SetShowLoginError();
 
 	/**
-	 * @abstract
 	 * @param $languageCode string
 	 */
 	public function SetSelectedLanguage($languageCode);
 
 	/**
-	 * @abstract
 	 * @param $shouldShow bool
 	 */
 	public function ShowUsernamePrompt($shouldShow);
 
 	/**
-	 * @abstract
 	 * @param $shouldShow bool
 	 */
 	public function ShowPasswordPrompt($shouldShow);
 
 	/**
-	 * @abstract
 	 * @param $shouldShow bool
 	 */
 	public function ShowPersistLoginPrompt($shouldShow);
 
 	/**
-	 * @abstract
 	 * @param $shouldShow bool
 	 */
 	public function ShowForgotPasswordPrompt($shouldShow);
+
+	/**
+	 * @param $url string
+	 */
+	public function SetRegistrationUrl($url);
+
+	/**
+	 * @param $url string
+	 */
+	public function SetPasswordResetUrl($url);
 }
 
 class LoginPage extends Page implements ILoginPage
@@ -247,6 +246,14 @@ class LoginPage extends Page implements ILoginPage
 	{
 		$this->Set('ShowScheduleLink', $shouldShow);
 	}
-}
 
-?>
+	public function SetPasswordResetUrl($url)
+	{
+		$this->Set('ForgotPasswordUrl', empty($url) ? Pages::FORGOT_PASSWORD : $url);
+	}
+
+	public function SetRegistrationUrl($url)
+	{
+		$this->Set('RegisterUrl', empty($url) ? Pages::REGISTRATION : $url);
+	}
+}

@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -77,6 +77,7 @@ class GenerateReportPresenter extends ActionPresenter
 
 		$this->AddAction(ReportActions::Generate, 'GenerateCustomReport');
 		$this->AddAction(ReportActions::PrintReport, 'PrintReport');
+		$this->AddAction(ReportActions::PrintMaintenanceReport, 'PrintMaintenanceReport');
 		$this->AddAction(ReportActions::Csv, 'ExportToCsv');
 		$this->AddAction(ReportActions::Save, 'SaveReport');
 	}
@@ -106,6 +107,12 @@ class GenerateReportPresenter extends ActionPresenter
 	{
 		$this->BindReport();
 		$this->page->PrintReport();
+	}
+
+	public function PrintMaintenanceReport()
+	{
+		$this->BindReport();
+		$this->page->PrintMaintenanceReport();
 	}
 
 	public function GenerateCustomReport()
@@ -188,9 +195,6 @@ class GenerateReportPresenter extends ActionPresenter
 	 */
 	private function GetFilter()
 	{
-		return new Report_Filter($this->page->GetResourceId(), $this->page->GetScheduleId(), $this->page->GetUserId(), $this->page->GetGroupId(), $this->page->GetAccessoryId());
+		return new Report_Filter($this->page->GetResourceId(), $this->page->GetScheduleId(), $this->page->GetUserId(), $this->page->GetGroupId(), $this->page->GetAccessoryId(), $this->page->GetParticipantId());
 	}
 }
-
-
-?>

@@ -38,7 +38,7 @@ function setUpCalender() {
             onMonthChange: function(month)
                 {
                     var startDateTime = month.startOf('month').toISOString();
-                    var endDateTime = month.endOf('month').toISOString();
+                    var endDateTime = month.clone().add('months', 1).startOf('month').toISOString();
                     getReservations(startDateTime, endDateTime);
                 }
         },
@@ -53,7 +53,7 @@ function setUpCalender() {
         adjacentDaysChangeMonth: false
     });
     var startDateTime = moment().startOf('month').toISOString();
-    var endDateTime = moment().endOf('month').toISOString();
+    var endDateTime = moment().add('months', 1).startOf('month').toISOString();
     getReservations(startDateTime, endDateTime);
 };
 /**
@@ -107,6 +107,7 @@ function setUpAddEventForm() {
  */
 function getReservations(startDateTime, endDateTime) {
     url = baseUrl+"Reservations/?scheduleId="+scheduleId+"&startDateTime="+encodeURIComponent(startDateTime)+"&endDateTime="+encodeURIComponent(endDateTime);
+    console.log(url);
     $.ajax(
         {
             type: "GET",
@@ -115,6 +116,7 @@ function getReservations(startDateTime, endDateTime) {
             dataType: "json"
         })
         .done(function (data) {
+            console.log(data);
             reservations = [];
             $.each(data.reservations, function (idx, val) {
                 var newEvent = {
@@ -138,5 +140,5 @@ function getReservations(startDateTime, endDateTime) {
         }).error(function(e) {
             /* Act on the event */
             console.log(e.message);
-        });   
+        });
 };

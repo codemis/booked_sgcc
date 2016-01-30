@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -240,6 +240,11 @@ class ReservationSeries
 	 */
 	protected $endReminder;
 
+	/**
+	 * @var bool
+	 */
+	protected $allowParticipation = false;
+
 	protected function __construct()
 	{
 		$this->_repeatOptions = new RepeatNone();
@@ -327,6 +332,15 @@ class ReservationSeries
 		}
 
 		return $max->TotalSeconds() > 0 ? $max : null;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function BookedOnBehalf()
+	{
+		$bookedBy = $this->BookedBy();
+		return ($bookedBy != null) && ($this->UserId() != $bookedBy->UserId);
 	}
 
 	/**
@@ -451,6 +465,22 @@ class ReservationSeries
 		{
 			$instance->ChangeParticipants($participantIds);
 		}
+	}
+
+	/**
+	 * @param bool $shouldAllowParticipation
+	 */
+	public function AllowParticipation($shouldAllowParticipation)
+	{
+		$this->allowParticipation = $shouldAllowParticipation;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function GetAllowParticipation()
+	{
+		return $this->allowParticipation;
 	}
 
 	/**

@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -32,7 +32,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 				<td rowspan="2">&nbsp;</td>
 				{foreach from=$BoundDates item=date}
 					{assign var=class value=""}
-					{if $TodaysDate->DateEquals($date) eq true}
+					{if $date->DateEquals($TodaysDate)}
 						{assign var=class value="today-custom"}
 					{/if}
 					<td class="resdate-custom resdate {$class}"
@@ -56,7 +56,8 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 							<a href="{$href}" resourceId="{$resource->Id}"
 							   class="resourceNameSelector">{$resource->Name}</a>
 						{else}
-							{$resource->Name}
+							<span resourceId="{$resource->Id}" resourceId="{$resource->Id}"
+								  class="resourceNameSelector">{$resource->Name}</span>
 						{/if}
 					</td>
 					{foreach from=$BoundDates item=date}

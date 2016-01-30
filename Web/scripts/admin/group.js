@@ -79,33 +79,8 @@ function GroupManagement(opts) {
 			removeUserFromGroup($(this), userId);
 		});
 
-		elements.autocompleteSearch.autocomplete({
-			source: function(request, response) {
-				$.ajax({
-					url: options.groupAutocompleteUrl,
-					dataType: "json",
-					data: {
-						term: request.term
-					},
-					success: function(data) {
-						response($.map(data, function(item) {
-							return {
-								label: item.Name,
-								value: item.Id
-							}
-						}));
-					}
-				});
-			},
-			focus: function(event, ui) {
-				elements.autocompleteSearch.val(ui.item.label);
-				return false;
-			},
-			select: function(event, ui) {
-				elements.autocompleteSearch.val(ui.item.label);
-				window.location.href = options.selectGroupUrl + ui.item.value
-				return false;
-			}
+		elements.autocompleteSearch.groupAutoComplete(options.groupAutocompleteUrl, function(ui){
+			window.location.href = options.selectGroupUrl + ui.item.value
 		});
 
 		elements.userSearch.userAutoComplete(options.userAutocompleteUrl, function(ui) {

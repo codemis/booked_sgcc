@@ -70,3 +70,23 @@
 	cursor: pointer;
 	background-color: #F0F0F0;
 }
+
+#availabilityDashboard .header {
+	font-size:1.1em;
+	margin-top: 8px;
+}
+
+#availabilityDashboard .header:first-of-type {
+	margin-top:0;
+}
+
+#availabilityDashboard .resourceName {
+	min-width:150px;
+	max-width:250px;
+	display:inline-block;
+}
+
+#availabilityDashboard .availability {
+	width:350px;
+	display:inline-block;
+}

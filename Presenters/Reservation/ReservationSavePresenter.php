@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -108,6 +108,8 @@ class ReservationSavePresenter implements IReservationSavePresenter
 
 		$inviteeIds = $this->_page->GetInvitees();
 		$reservationSeries->ChangeInvitees($inviteeIds);
+
+		$reservationSeries->AllowParticipation($this->_page->GetAllowParticipation());
 
 		$attachments = $this->_page->GetAttachments();
 

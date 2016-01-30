@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -59,6 +59,7 @@ class ReservationDeletePage extends SecurePage implements IReservationDeletePage
 	{
 		try
 		{
+			$this->EnforceCSRFCheck();
 			$reservation = $this->presenter->BuildReservation();
 			$this->presenter->HandleReservation($reservation);
 

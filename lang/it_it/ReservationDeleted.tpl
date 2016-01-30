@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 Translation: 2014 Nicola Ruggero <nicola@nxnt.org>
 
@@ -18,45 +18,62 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
-{include file='..\..\tpl\Email\emailheader.tpl'}
 
-	Dettagli prenotazione:
+
+Dettagli prenotazione:
+<br/>
+<br/>
+
+Utente: {$UserName}<br/>
+Inizio: {formatdate date=$StartDate key=reservation_email}<br/>
+Fine: {formatdate date=$EndDate key=reservation_email}<br/>
+{if $ResourceNames|count > 1}
+	Risorse:
 	<br/>
-	<br/>
-
-	Utente: {$UserName}<br/>
-	Inizio: {formatdate date=$StartDate key=reservation_email}<br/>
-	Fine: {formatdate date=$EndDate key=reservation_email}<br/>
-	{if $ResourceNames|count > 1}
-		Risorse:<br/>
-		{foreach from=$ResourceNames item=resourceName}
-			{$resourceName}<br/>
-		{/foreach}
-		{else}
-		Risorsa: {$ResourceName}<br/>
-	{/if}
-	Note: {$Title}<br/>
-	Descrizione: {$Description|nl2br}<br/>
-
-	{if count($RepeatDates) gt 0}
+	{foreach from=$ResourceNames item=resourceName}
+		{$resourceName}
 		<br/>
-		Le seguenti date sono state rimosse:
-		<br/>
-	{/if}
-
-	{foreach from=$RepeatDates item=date name=dates}
-		{formatdate date=$date}<br/>
 	{/foreach}
-
-	{if $Accessories|count > 0}
-		<br/>Accessori:<br/>
-		{foreach from=$Accessories item=accessory}
-			({$accessory->QuantityReserved}) {$accessory->Name}<br/>
-		{/foreach}
-	{/if}
-
+{else}
+	Risorsa: {$ResourceName}
 	<br/>
-	<br/>
-	<a href="{$ScriptUrl}">Accedi a Booked Scheduler</a>
+{/if}
 
-{include file='..\..\tpl\Email\emailfooter.tpl'}
+{if $ResourceImage}
+	<div class="resource-image"><img src="{$ScriptUrl}/{$ResourceImage}"/></div>
+{/if}
+
+Note: {$Title}<br/>
+Descrizione: {$Description|nl2br}<br/>
+
+{if count($RepeatDates) gt 0}
+	<br/>
+	Le seguenti date sono state rimosse:
+	<br/>
+{/if}
+
+{foreach from=$RepeatDates item=date name=dates}
+	{formatdate date=$date}
+	<br/>
+{/foreach}
+
+{if $Accessories|count > 0}
+	<br/>
+	Accessori:
+	<br/>
+	{foreach from=$Accessories item=accessory}
+		({$accessory->QuantityReserved}) {$accessory->Name}
+		<br/>
+	{/foreach}
+{/if}
+
+
+{if !empty($CreatedBy)}
+	<br/>
+	Eliminato da: {$CreatedBy}
+{/if}
+
+<br/>
+<br/>
+<a href="{$ScriptUrl}">Accedi a Booked Scheduler</a>
+

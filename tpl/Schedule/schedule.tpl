@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -49,13 +49,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {/function}
 
 {function name=displayReservable}
-	<td {$spantype|default:'col'}span="{$Slot->PeriodSpan()}" ref="{$SlotRef}" class="reservable clickres slot"><div style="position:relative;width:100%;height:100%;">
-		&nbsp;
-		<input type="hidden" class="href" value="{$Href}"/>
-		<input type="hidden" class="start" value="{$Slot->BeginDate()->Format('Y-m-d H:i:s')|escape:url}"/>
-		<input type="hidden" class="end" value="{$Slot->EndDate()->Format('Y-m-d H:i:s')|escape:url}"/>
-		</div>
-	</td>
+	<td {$spantype|default:'col'}span="{$Slot->PeriodSpan()}" ref="{$SlotRef}" class="reservable clickres slot" data-href="{$Href}" data-start="{$Slot->BeginDate()->Format('Y-m-d H:i:s')|escape:url}" data-end="{$Slot->EndDate()->Format('Y-m-d H:i:s')|escape:url}">&nbsp;</td>
 {/function}
 
 {function name=displayRestricted}
@@ -74,8 +68,12 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {* End slot display formatting *}
 
 {block name="header"}
-	{include file='globalheader.tpl' cssFiles='css/jquery.qtip.min.css,scripts/css/jqtree.css,css/schedule.css'}
+	{include file='globalheader.tpl' cssFiles='css/jquery.qtip.min.css,scripts/css/jqtree.css,css/schedule.css' printCssFiles='css/schedule-print.css'}
 {/block}
+
+{if $ShowResourceWarning}
+	<div class="error">{translate key=NoResources} <a href="admin/manage_resources.php">{translate key=AddResource}</a></div>
+{/if}
 
 {if $IsAccessible}
 
@@ -120,7 +118,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		{capture name="date_navigation"}
 			<div class="schedule_dates">
 				{assign var=FirstDate value=$DisplayDates->GetBegin()}
-				{assign var=LastDate value=$DisplayDates->GetEnd()}
+				{assign var=LastDate value=$DisplayDates->GetEnd()->AddDays(-1)}
 				<a href="#" onclick="ChangeDate({formatdate date=$PreviousDate format="Y, m, d"}); return false;"><img
 							src="img/arrow_large_left.png" alt="Back"/></a>
 				{formatdate date=$FirstDate} - {formatdate date=$LastDate}
@@ -216,7 +214,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		{foreach from=$BoundDates item=date}
 			<div style="position:relative;">
 			<table class="reservations" border="1" cellpadding="0" width="100%">
-				{if $TodaysDate->DateEquals($date) eq true}
+				{if $date->DateEquals($TodaysDate)}
 				<tr class="today">
 					{else}
 				<tr>
@@ -236,7 +234,8 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 								<a href="{$href}" resourceId="{$resource->Id}"
 								   class="resourceNameSelector">{$resource->Name}</a>
 							{else}
-								{$resource->Name}
+								<span resourceId="{$resource->Id}" resourceId="{$resource->Id}"
+																   class="resourceNameSelector">{$resource->Name}</span>
 							{/if}
 						</td>
 						{foreach from=$slots item=slot}
@@ -266,7 +265,6 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 
 {block name="scripts-common"}
 	{jsfile src="js/jquery.qtip.min.js"}
-	{jsfile src="js/jquery.qtip.min.js"}
 	{jsfile src="js/moment.min.js"}
 	{jsfile src="schedule.js"}
 	{jsfile src="resourcePopup.js"}
@@ -282,7 +280,8 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 				summaryPopupUrl: "{$Path}ajax/respopup.php",
 				setDefaultScheduleUrl: "{$Path}{Pages::PROFILE}?action=changeDefaultSchedule&{QueryStringKeys::SCHEDULE_ID}=[scheduleId]",
 				cookieName: "{$CookieName}",
-				scheduleId:"{$ScheduleId}"
+				scheduleId:"{$ScheduleId}",
+				scriptUrl: '{$ScriptUrl}'
 			};
 
 			var schedule = new Schedule(scheduleOpts, {$ResourceGroupsAsJson});

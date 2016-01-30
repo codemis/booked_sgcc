@@ -433,7 +433,17 @@ function ReservationManagement(opts, approval)
 				showError();
 			}
 
-			var template = $('.attributeTemplate[attributeId="' + attributeId + '"]').clone();
+			$.ajax({
+					url: 'manage_reservations.php?dr=attribute&rn=' + getActiveReferenceNumber() + '&aid=' + attributeId,
+					dataType: 'html',
+					async:false
+				})
+				.done(function (data)
+				{
+					template = $(data);
+				});
+
+			//var template = $.get() // $('.attributeTemplate[attributeId="' + attributeId + '"]').clone();
 			var attributeElement = template.find("[id^=psiattribute]");
 
 			var attribute = currentReservation.Attributes[attributeId];
@@ -444,9 +454,10 @@ function ReservationManagement(opts, approval)
 					template.find(':checkbox').attr('checked', true)
 				}
 			}
+			//else if(attribute)
 			else
 			{
-				attributeElement.val(attributeValue);
+				attributeElement.val(attributeValue).trigger('change');
 			}
 
 			previousContents = cell.html();

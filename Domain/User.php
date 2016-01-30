@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -124,6 +124,16 @@ class User
 	protected $groups = array();
 
 	/**
+	 * @var UserGroup[]
+	 */
+	private $_addedGroups = array();
+
+	/**
+	 * @var UserGroup[]
+	 */
+	private $_removedGroups = array();
+
+	/**
 	 * @var array|UserGroup[]
 	 */
 	protected $groupsICanAdminister = array();
@@ -134,6 +144,22 @@ class User
 	public function Groups()
 	{
 		return $this->groups;
+	}
+
+	/**
+	 * @return UserGroup[]
+	 */
+	public function GetAddedGroups()
+	{
+		return $this->_addedGroups;
+	}
+
+	/**
+	 * @return UserGroup[]
+	 */
+	public function GetRemovedGroups()
+	{
+		return $this->_removedGroups;
 	}
 
 	/**
@@ -843,6 +869,30 @@ class User
 		return $this->preferences->Get($preferenceName);
 	}
 
+	/**
+	 * @param $groups UserGroup[]
+	 */
+	public function ChangeGroups($groups)
+	{
+		$diff = new ArrayDiff($this->groups, $groups);
+
+		$added = $diff->GetAddedToArray1();
+		$removed = $diff->GetRemovedFromArray1();
+
+		/** @var $group UserGroup */
+		foreach ($added as $group)
+		{
+			$this->_addedGroups[] = $group;
+		}
+
+		/** @var $group UserGroup */
+		foreach ($removed as $group)
+		{
+			$this->_removedGroups[] = $group;
+		}
+
+		$this->WithGroups($groups);
+	}
 }
 
 class NullUser extends User
@@ -952,5 +1002,10 @@ class UserGroup
 		{
 			$this->IsScheduleAdmin = true;
 		}
+	}
+
+	public function __toString()
+	{
+		return $this->GroupId . '';
 	}
 }

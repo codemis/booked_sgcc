@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -29,6 +29,7 @@ class Pages
 	const CALENDAR_SUBSCRIBE_ATOM = 'atom-subscribe.php';
 	const DASHBOARD = 'dashboard.php';
 	const DEFAULT_LOGIN = 'dashboard.php';
+	const FORGOT_PASSWORD = 'forgot.php';
 	const INVITATION_RESPONSES = 'participation.php';
 	const LOGIN = 'index.php';
 	const MANAGE_RESERVATIONS = 'manage_reservations.php';

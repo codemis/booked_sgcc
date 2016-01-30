@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -23,7 +23,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 <div id="reservationbox">
 
 <form id="reservationForm" method="post" enctype="multipart/form-data">
-
+    {csrf_token}
 <div class="reservationSubmitButtons buttonsTop">
 	{block name="submitButtons"}
 		<button type="button" class="button save create">
@@ -46,7 +46,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 <div id="reservationDetails">
     <ul class="no-style">
         <li>
-            <span id="userName">{$ReservationUserName}</span> <input id="userId"
+            <a href="#" id="userName" data-userid="{$UserId}">{$ReservationUserName}</a> <input id="userId"
                                                                      type="hidden" {formname key=USER_ID}
                                                                      value="{$UserId}"/>
 		{if $CanChangeUser}
@@ -347,6 +347,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {jsfile src="js/jquery.form-3.09.min.js"}
 {jsfile src="js/moment.min.js"}
 {jsfile src="resourcePopup.js"}
+{jsfile src="userPopup.js"}
 {jsfile src="date-helper.js"}
 {jsfile src="recurrence.js"}
 {jsfile src="reservation.js"}
@@ -428,6 +429,8 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		return false;
 	});
 	$('#description').TextAreaExpander();
+
+	$('#userName').bindUserDetails();
 });
 </script>
 
