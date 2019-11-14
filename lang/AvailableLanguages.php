@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -45,6 +45,7 @@ class AvailableLanguages
         			'it_it' => new AvailableLanguage('it_it', 'it_it.php', 'Italiano'),
         			'ja_jp' => new AvailableLanguage('ja_jp', 'ja_jp.php', 'Japanese'),
 					'lt' => new AvailableLanguage('lt', 'lt.php', 'Lietuvių'),
+					'no_no' => new AvailableLanguage('no_no', 'no_no.php', 'Norsk bokmål'),
 					'pl' => new AvailableLanguage('pl', 'pl.php', 'Polski'),
 					'pt_br' => new AvailableLanguage('pt_br', 'pt_br.php', 'Portugu&ecirc;s Brasileiro'),
 					'sv_sv' => new AvailableLanguage('sv_sv', 'sv_sv.php', 'Swedish'),

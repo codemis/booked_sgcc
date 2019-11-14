@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -133,6 +133,11 @@ interface IReservationSavePage extends IReservationSaveResultsView, IRepeatOptio
 	 * @return string
 	 */
 	public function GetEndReminderInterval();
+
+	/**
+	 * @return bool
+	 */
+	public function GetAllowParticipation();
 }
 
 class ReservationSavePage extends SecurePage implements IReservationSavePage
@@ -159,11 +164,15 @@ class ReservationSavePage extends SecurePage implements IReservationSavePage
 	{
 		try
 		{
+			$this->EnforceCSRFCheck();
 			$reservation = $this->_presenter->BuildReservation();
 			$this->_presenter->HandleReservation($reservation);
 
 			if ($this->_reservationSavedSuccessfully)
 			{
+				$this->Set('Resources', $reservation->AllResources());
+				$this->Set('Instances', $reservation->Instances());
+				$this->Set('Timezone', ServiceLocator::GetServer()->GetUserSession()->Timezone);
 				$this->Display('Ajax/reservation/save_successful.tpl');
 			}
 			else
@@ -470,6 +479,15 @@ class ReservationSavePage extends SecurePage implements IReservationSavePage
 	public function GetEndReminderInterval()
 	{
 		return $this->server->GetForm(FormKeys::END_REMINDER_INTERVAL);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function GetAllowParticipation()
+	{
+		$val = $this->server->GetForm(FormKeys::ALLOW_PARTICIPATION);
+		return !empty($val);
 	}
 }
 

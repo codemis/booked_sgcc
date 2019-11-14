@@ -1,6 +1,6 @@
 <?php
 /**
- Copyright 2013-2014 Nick Korbel
+ Copyright 2013-2015 Nick Korbel
 
  This file is part of Booked Scheduler.
 
@@ -41,9 +41,18 @@ class UserPreferences
 
 		$pairs = explode('!sep!', $allPreferences);
 
+		if (empty($pairs))
+		{
+			return $preferences;
+		}
+
 		foreach ($pairs as $pair)
 		{
 			$nv = explode('=', $pair);
+			if (count($nv) != 2)
+			{
+				continue;
+			}
 			$preferences->Add($nv[0], $nv[1]);
 		}
 

@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -23,6 +23,8 @@ require_once(ROOT_DIR . 'Domain/ResourceGroup.php');
 require_once(ROOT_DIR . 'Domain/ResourceType.php');
 require_once(ROOT_DIR . 'Domain/Access/IResourceRepository.php');
 require_once(ROOT_DIR . 'Domain/Values/ResourceStatus.php');
+require_once(ROOT_DIR . 'Domain/Values/AccountStatus.php');
+require_once(ROOT_DIR . 'Domain/Values/AccountStatus.php');
 
 class ResourceRepository implements IResourceRepository
 {
@@ -250,6 +252,11 @@ class ResourceRepository implements IResourceRepository
 
 	public function GetResourceGroups($scheduleId = ResourceRepository::ALL_SCHEDULES, $resourceFilter = null)
 	{
+		if (empty($scheduleId))
+		{
+			$scheduleId = ResourceRepository::ALL_SCHEDULES;
+		}
+
 		$groups = ServiceLocator::GetDatabase()
 				  ->Query(new GetAllResourceGroupsCommand());
 
@@ -468,6 +475,52 @@ class ResourceRepository implements IResourceRepository
 	public function RemoveStatusReason($reasonId)
 	{
 		ServiceLocator::GetDatabase()->Execute(new DeleteResourceStatusReasonCommand($reasonId));
+	}
+
+	public function GetUsersWithPermission($resourceId, $pageNumber = null, $pageSize = null, $filter = null, $accountStatus = AccountStatus::ACTIVE)
+	{
+		$command = new GetResourceUserPermissionCommand($resourceId, $accountStatus);
+
+		if ($filter != null)
+		{
+			$command = new FilterCommand($command, $filter);
+		}
+
+		$builder = array('UserItemView', 'Create');
+		return PageableDataStore::GetList($command, $builder, $pageNumber, $pageSize);
+	}
+
+	public function GetGroupsWithPermission($resourceId, $pageNumber = null, $pageSize = null, $filter = null)
+	{
+		$command = new GetResourceGroupPermissionCommand($resourceId);
+
+		if ($filter != null)
+		{
+			$command = new FilterCommand($command, $filter);
+		}
+
+		$builder = array('GroupItemView', 'Create');
+		return PageableDataStore::GetList($command, $builder, $pageNumber, $pageSize);
+	}
+
+	public function AddResourceUserPermission($resourceId, $userId)
+	{
+		ServiceLocator::GetDatabase()->Execute(new AddUserResourcePermission($userId, $resourceId));
+	}
+
+	public function RemoveResourceUserPermission($resourceId, $userId)
+	{
+		ServiceLocator::GetDatabase()->Execute(new DeleteUserResourcePermission($userId, $resourceId));
+	}
+
+	public function AddResourceGroupPermission($resourceId, $groupId)
+	{
+		ServiceLocator::GetDatabase()->Execute(new AddGroupResourcePermission($groupId, $resourceId));
+	}
+
+	public function RemoveResourceGroupPermission($resourceId, $groupId)
+	{
+		ServiceLocator::GetDatabase()->Execute(new DeleteGroupResourcePermission($groupId, $resourceId));
 	}
 }
 

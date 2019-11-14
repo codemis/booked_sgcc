@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -35,6 +35,8 @@ class UserSession
 	public $LoginTime = '';
 	public $ScheduleId = '';
 	public $Groups = array();
+	public $AdminGroups = array();
+	public $CSRFToken = '';
 
 	public function __construct($id)
 	{
@@ -44,6 +46,34 @@ class UserSession
 	public function IsLoggedIn()
 	{
 		return true;
+	}
+
+	public function IsAdminForGroup($groupIds = array())
+	{
+		if (!is_array($groupIds))
+		{
+			$groupIds = array($groupIds);
+		}
+
+		if ($this->IsAdmin)
+		{
+			return true;
+		}
+
+		if (!$this->IsGroupAdmin)
+		{
+			return false;
+		}
+
+		foreach($groupIds as $groupId)
+		{
+			if (in_array($groupId, $this->AdminGroups))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public function __toString()

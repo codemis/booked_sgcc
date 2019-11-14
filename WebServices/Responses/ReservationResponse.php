@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -22,7 +22,7 @@ require_once(ROOT_DIR . 'lib/WebService/namespace.php');
 require_once(ROOT_DIR . 'WebServices/Responses/RecurrenceRequestResponse.php');
 require_once(ROOT_DIR . 'WebServices/Responses/ResourceItemResponse.php');
 require_once(ROOT_DIR . 'WebServices/Responses/ReservationAccessoryResponse.php');
-require_once(ROOT_DIR . 'WebServices/Responses/CustomAttributeResponse.php');
+require_once(ROOT_DIR . 'WebServices/Responses/CustomAttributes/CustomAttributeResponse.php');
 require_once(ROOT_DIR . 'WebServices/Responses/AttachmentResponse.php');
 require_once(ROOT_DIR . 'WebServices/Responses/ReservationUserResponse.php');
 require_once(ROOT_DIR . 'WebServices/Responses/ReminderRequestResponse.php');
@@ -78,6 +78,10 @@ class ReservationResponse extends RestResponse
 	 * @var ReminderRequestResponse
 	 */
 	public $endReminder;
+	/**
+	 * @var bool
+	 */
+	public $allowParticipation;
 
 	/**
 	 * @param IRestServer $server
@@ -161,6 +165,8 @@ class ReservationResponse extends RestResponse
 			$this->endReminder = new ReminderRequestResponse($reservation->EndReminder->GetValue(), $reservation->EndReminder->GetInterval());
 		}
 
+		$this->allowParticipation = $reservation->AllowParticipation;
+
 		if ($reservation->RequiresApproval())
 		{
 			$this->AddService($server, WebServices::ApproveReservation, array(WebServiceParams::ReferenceNumber => $reservation->ReferenceNumber));
@@ -200,5 +206,6 @@ class ExampleReservationResponse extends ReservationResponse
 		$this->title = 'reservation title';
 		$this->startReminder = ReminderRequestResponse::Example();
 		$this->endReminder = ReminderRequestResponse::Example();
+		$this->allowParticipation = true;
 	}
 }

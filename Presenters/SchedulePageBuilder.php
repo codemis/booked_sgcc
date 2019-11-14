@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -48,11 +48,9 @@ interface ISchedulePageBuilder
 	/**
 	 * @param ISchedulePage $page
 	 * @param DateRange $dateRange display dates
-	 * @param UserSession $userSession
 	 * @param ISchedule $schedule
 	 */
-	public function BindDisplayDates(ISchedulePage $page, DateRange $dateRange, UserSession $userSession,
-									 ISchedule $schedule);
+	public function BindDisplayDates(ISchedulePage $page, DateRange $dateRange, ISchedule $schedule);
 
 	/**
 	 * @param ISchedulePage $page
@@ -210,13 +208,7 @@ class SchedulePageBuilder implements ISchedulePageBuilder
 		return $applicableDates;
 	}
 
-	/**
-	 * @see ISchedulePageBuilder::BindDisplayDates()
-	 */
-	public function BindDisplayDates(ISchedulePage $page,
-									 DateRange $dateRange,
-									 UserSession $userSession,
-									 ISchedule $schedule)
+	public function BindDisplayDates(ISchedulePage $page, DateRange $dateRange, ISchedule $schedule)
 	{
 		$scheduleLength = $schedule->GetDaysVisible();
 		if ($page->GetShowFullWeek())
@@ -224,17 +216,9 @@ class SchedulePageBuilder implements ISchedulePageBuilder
 			$scheduleLength = 7;
 		}
 
-		// we don't want to display the last date in the range (it will be midnight of the last day)
-		$adjustedDateRange = new DateRange($dateRange
-										   ->GetBegin()
-										   ->ToTimezone($userSession->Timezone), $dateRange
-																				 ->GetEnd()
-																				 ->ToTimezone($userSession->Timezone)
-																				 ->AddDays(-1));
+		$page->SetDisplayDates($dateRange);
 
-		$page->SetDisplayDates($adjustedDateRange);
-
-		$startDate = $adjustedDateRange->GetBegin();
+		$startDate = $dateRange->GetBegin();
 
 		$startDay = $schedule->GetWeekdayStart();
 
@@ -435,7 +419,7 @@ class SchedulePageBuilder implements ISchedulePageBuilder
 		$vals = array();
 		foreach ($attributeFormElements as $e)
 		{
-			if (!empty($e->Value))
+			if (!empty($e->Value) || (is_numeric($e->Value) && $e->Value == 0))
 			{
 				$vals[] = new AttributeValue($e->Id, $e->Value);
 			}
@@ -459,5 +443,3 @@ class SchedulePageBuilder implements ISchedulePageBuilder
 		}
 	}
 }
-
-?>

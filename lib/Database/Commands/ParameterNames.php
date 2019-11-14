@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -31,6 +31,7 @@ class ParameterNames
 	const ACTIVATION_CODE = '@activation_code';
 
 	const ALLOW_CALENDAR_SUBSCRIPTION = '@allow_calendar_subscription';
+	const ALLOW_PARTICIPATION = '@allow_participation';
 
 	const ANNOUNCEMENT_ID = '@announcementid';
 	const ANNOUNCEMENT_TEXT = '@text';
@@ -87,6 +88,7 @@ class ParameterNames
 	const ORGANIZATION = '@organization';
 
 	const PASSWORD = '@password';
+	const PARTICIPANT_ID = '@participant_id';
 	const PERIOD_AVAILABILITY_TYPE = '@periodType';
 	const PERIOD_DAY_OF_WEEK = '@day_of_week';
 	const PERIOD_LABEL = '@label';

@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -67,7 +67,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 	{if $ShowRegisterLink}
 		<h4 class="register">
 			{translate key='FirstTimeUser?'}
-				{html_link href="register.php" key="CreateAnAccount"}
+				{html_link href="{$RegisterUrl}" key="CreateAnAccount"}
 		</h4>
 	{/if}
 	</form>
@@ -80,7 +80,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		{/if}
 		{if $ShowScheduleLink && $ShowForgotPasswordPrompt}|{/if}
 		{if $ShowForgotPasswordPrompt}
-		<a href="forgot.php">{translate key='ForgotMyPassword'}</a>
+			<a href="{$ForgotPasswordUrl}">{translate key='ForgotMyPassword'}</a>
 		{/if}
 	</p>
 </div>

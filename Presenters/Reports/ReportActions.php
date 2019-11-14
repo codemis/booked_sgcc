@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -22,6 +22,7 @@ class ReportActions
 {
 	const Generate = 'generate';
 	const PrintReport = 'print';
+	const PrintMaintenanceReport = 'print-maintenance';
 	const Csv = 'csv';
 	const Save = 'save';
 	const Email = 'email';

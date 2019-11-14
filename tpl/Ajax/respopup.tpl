@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -18,19 +18,30 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
 {if $authorized}
 <div class="res_popup_details" style="margin:0">
+	{capture "name"}
 	<div class="user">
-		{if $hideUserInfo}
+		{if $hideUserInfo || $hideDetails}
 			{translate key=Private}
 		{else}
 			{$fullName}
 		{/if}
 	</div>
-	<div class="dates">{formatdate date=$startDate key=res_popup} - {formatdate date=$endDate key=res_popup}</div>
+	{/capture}
+	{$formatter->Add('name', $smarty.capture.name)}
 
+	{capture "dates"}
+		<div class="dates">{formatdate date=$startDate key=res_popup} - {formatdate date=$endDate key=res_popup}</div>
+	{/capture}
+	{$formatter->Add('dates', $smarty.capture.dates)}
+
+	{capture "title"}
 	{if !$hideDetails}
-    <div class="title">{if $title neq ''}{$title}{else}{translate key=NoTitleLabel}{/if}</div>
+		<div class="title">{if $title neq ''}{$title}{else}{translate key=NoTitleLabel}{/if}</div>
 	{/if}
+	{/capture}
+	{$formatter->Add('title', $smarty.capture.title)}
 
+	{capture "resources"}
 	<div class="resources">
 	{translate key="Resources"} ({$resources|@count}):
 	{foreach from=$resources item=resource name=resource_loop}
@@ -38,8 +49,11 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		{if !$smarty.foreach.resource_loop.last}, {/if}
 	{/foreach}
 	</div>
+	{/capture}
+	{$formatter->Add('resources', $smarty.capture.resources)}
 
-	{if !$hideUserInfo}
+	{capture "participants"}
+	{if !$hideUserInfo && !$hideDetails}
 	<div class="users">
 	{translate key="Participants"} ({$participants|@count}):
 	{foreach from=$participants item=user name=participant_loop}
@@ -50,25 +64,49 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 	{/foreach}
 	</div>
 	{/if}
+	{/capture}
+	{$formatter->Add('participants', $smarty.capture.participants)}
 
-	<div class="accessories">
-	{translate key="Accessories"} ({$accessories|@count}):
-	{foreach from=$accessories item=accessory name=accessory_loop}
-		{$accessory->Name} ({$accessory->QuantityReserved})
-		{if !$smarty.foreach.accessory_loop.last}, {/if}
-	{/foreach}
-	</div>
+	{capture "accessories"}
+	{if !$hideDetails}
+		<div class="accessories">
+		{translate key="Accessories"} ({$accessories|@count}):
+		{foreach from=$accessories item=accessory name=accessory_loop}
+			{$accessory->Name} ({$accessory->QuantityReserved})
+			{if !$smarty.foreach.accessory_loop.last}, {/if}
+		{/foreach}
+		</div>
+	{/if}
+	{/capture}
+	{$formatter->Add('accessories', $smarty.capture.accessories)}
 
+	{capture "description"}
 	{if !$hideDetails}
 		<div class="summary">{if $summary neq ''}{$summary|truncate:300:"..."|nl2br}{else}{translate key=NoDescriptionLabel}{/if}</div>
+	{/if}
+	{/capture}
+	{$formatter->Add('description', $smarty.capture.description)}
+
+	{capture "attributes"}
+	{if !$hideDetails}
 		{if $attributes|count > 0}
 			<br/>
 			{foreach from=$attributes item=attribute}
+				{assign var=attr value="att`$attribute->Id()`"}
+				{capture name=""|cat:$attr}
 				<div>{control type="AttributeControl" attribute=$attribute readonly=true}</div>
+				{/capture}
+				{$smarty.capture.$attr}
+				{$formatter->Add($attr, $smarty.capture.$attr)}
 			{/foreach}
 		{/if}
 	{/if}
+	{/capture}
+	{$formatter->Add('attributes', $smarty.capture.attributes)}
+
 	<!-- {$ReservationId} -->
+
+	{$formatter->Display()}
 </div>
 {else}
 	{translate key='InsufficientPermissionsError'}

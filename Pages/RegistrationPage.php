@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -82,9 +82,17 @@ class RegistrationPage extends ActionPage implements IRegistrationPage
 	public function ProcessPageLoad()
 	{
         $this->Set('EnableCaptcha', Configuration::Instance()->GetKey(ConfigKeys::REGISTRATION_ENABLE_CAPTCHA, new BooleanConverter()));
-		$this->_presenter->PageLoad();
-
-		$this->Display('register.tpl');
+		
+		try
+		{
+			$this->_presenter->PageLoad();
+			$this->Display('register.tpl');
+		}
+		catch(Exception $ex)
+		{
+			$this->Set('PageLoadException', true);
+			Log::Error('Error loading registration page %s', $ex);
+		}
 	}
 
 	public function RegisterClicked()
@@ -254,4 +262,3 @@ class RegistrationPage extends ActionPage implements IRegistrationPage
 		return AttributeFormParser::GetAttributes($this->GetForm(FormKeys::ATTRIBUTE_PREFIX));
 	}
 }
-?>

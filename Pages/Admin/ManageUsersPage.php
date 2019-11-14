@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -29,100 +29,85 @@ require_once(ROOT_DIR . 'lib/Application/Attributes/namespace.php');
 interface IManageUsersPage extends IPageable, IActionPage
 {
 	/**
-	 * @abstract
 	 * @param UserItemView[] $users
 	 * @return void
 	 */
 	function BindUsers($users);
 
 	/**
-	 * @abstract
 	 * @return int
 	 */
 	public function GetUserId();
 
 	/**
-	 * @abstract
-	 * @param BookableResources[] $resources
+	 * @param BookableResource[] $resources
 	 * @return void
 	 */
 	public function BindResources($resources);
 
 	/**
-	 * @abstract
 	 * @param mixed $objectToSerialize
 	 * @return void
 	 */
 	public function SetJsonResponse($objectToSerialize);
 
 	/**
-	 * @abstract
 	 * @return int[] resource ids the user has permission to
 	 */
 	public function GetAllowedResourceIds();
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetPassword();
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetEmail();
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetUserName();
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetFirstName();
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetLastName();
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetTimezone();
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetPhone();
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetPosition();
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetOrganization();
 
 	/**
-	 * @abstract
 	 * @return string
 	 */
 	public function GetLanguage();
 
 	/**
-	 * @param $attributeList IEntityAttributeList
+	 * @param $attributeList CustomAttribute[]
 	 */
 	public function BindAttributeList($attributeList);
 
@@ -150,8 +135,19 @@ interface IManageUsersPage extends IPageable, IActionPage
 	 * @return string
 	 */
 	public function GetReservationColor();
-}
 
+	public function ShowTemplateCSV();
+
+	/**
+	 * @return UploadedFile
+	 */
+	public function GetImportFile();
+
+	/**
+	 * @param CsvImportResult $importResult
+	 */
+	public function SetImportResult($importResult);
+}
 
 class ManageUsersPage extends ActionPage implements IManageUsersPage
 {
@@ -248,7 +244,7 @@ class ManageUsersPage extends ActionPage implements IManageUsersPage
 	}
 
 	/**
-	 * @param BookableResources[] $resources
+	 * @param BookableResource[] $resources
 	 * @return void
 	 */
 	public function BindResources($resources)
@@ -374,6 +370,25 @@ class ManageUsersPage extends ActionPage implements IManageUsersPage
 	{
 		return $this->GetForm(FormKeys::RESERVATION_COLOR);
 	}
-}
 
-?>
+	public function ShowTemplateCSV()
+	{
+		$this->DisplayCsv('Admin/Users/import_user_template_csv.tpl', 'users.csv');
+	}
+
+	/**
+	 * @return UploadedFile
+	 */
+	public function GetImportFile()
+	{
+		return $this->server->GetFile(FormKeys::USER_IMPORT_FILE);
+	}
+
+	/**
+	 * @param CsvImportResult $importResult
+	 */
+	public function SetImportResult($importResult)
+	{
+		$this->SetJsonResponse($importResult);
+	}
+}

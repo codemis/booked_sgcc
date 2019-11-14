@@ -1,5 +1,5 @@
 {*
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -19,7 +19,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 
 {include file='globalheader.tpl' cssFiles='css/admin.css'}
 
-<h1>{translate key=CustomAttributes}</h1>
+<h1>{translate key=CustomAttributes} {html_image src="question-button.png" id="help-prompt" ref="help-attributes"}</h1>
 
 <div id="customAttributeHeader">
 
@@ -44,6 +44,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 			<option value="{CustomAttributeTypes::MULTI_LINE_TEXTBOX}">{translate key=$Types[CustomAttributeTypes::MULTI_LINE_TEXTBOX]}</option>
 			<option value="{CustomAttributeTypes::SELECT_LIST}">{translate key=$Types[CustomAttributeTypes::SELECT_LIST]}</option>
 			<option value="{CustomAttributeTypes::CHECKBOX}">{translate key=$Types[CustomAttributeTypes::CHECKBOX]}</option>
+			<option value="{CustomAttributeTypes::DATETIME}">{translate key=$Types[CustomAttributeTypes::DATETIME]}</option>
 		</select>
 
 		<div class="textBoxOptions">
@@ -146,12 +147,14 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 </div>
 
 {html_image src="admin-ajax-indicator.gif" class="indicator" id="indicator" style="display:none;"}
+{csrf_token}
 
 <input type="hidden" id="activeId" value=""/>
 
 {jsfile src="admin/edit.js"}
 {jsfile src="admin/attributes.js"}
 {jsfile src="js/jquery.form-3.09.min.js"}
+{jsfile src="admin/help.js"}
 
 <script type="text/javascript">
 
@@ -162,6 +165,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		singleLine: '{CustomAttributeTypes::SINGLE_LINE_TEXTBOX}',
 		multiLine: '{CustomAttributeTypes::MULTI_LINE_TEXTBOX}',
 		selectList: '{CustomAttributeTypes::SELECT_LIST}',
+		date: '{CustomAttributeTypes::DATETIME}',
 		checkbox: '{CustomAttributeTypes::CHECKBOX}',
 		allText: "{translate key=All|escape:'javascript'}",
 		categories: {

@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -672,7 +672,7 @@ class RepeatConfiguration
 
 	private function SetWeekdays($weekdays)
 	{
-		if (!empty($weekdays))
+		if ($weekdays != null && $weekdays != '')
 		{
 			$this->Weekdays = explode(',', $weekdays);
 		}

@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -32,6 +32,7 @@ require_once(ROOT_DIR . 'WebServices/UsersWebService.php');
 require_once(ROOT_DIR . 'WebServices/UsersWriteWebService.php');
 require_once(ROOT_DIR . 'WebServices/SchedulesWebService.php');
 require_once(ROOT_DIR . 'WebServices/AttributesWebService.php');
+require_once(ROOT_DIR . 'WebServices/AttributesWriteWebService.php');
 require_once(ROOT_DIR . 'WebServices/GroupsWebService.php');
 require_once(ROOT_DIR . 'WebServices/AccessoriesWebService.php');
 
@@ -137,6 +138,7 @@ function RegisterResources(SlimServer $server, SlimWebServiceRegistry $registry)
 	$category->AddSecureGet('/', array($webService, 'GetAll'), WebServices::AllResources);
 	$category->AddGet('/Status', array($webService, 'GetStatuses'), WebServices::GetStatuses);
 	$category->AddSecureGet('/Status/Reasons', array($webService, 'GetStatusReasons'), WebServices::GetStatusReasons);
+	$category->AddSecureGet('/Types', array($webService, 'GetTypes'), WebServices::GetAllResourceTypes);
 	$category->AddSecureGet('/Availability', array($webService, 'GetAvailability'), WebServices::AllAvailability);
 	$category->AddSecureGet('/:resourceId', array($webService, 'GetResource'), WebServices::GetResource);
 	$category->AddSecureGet('/:resourceId/Availability', array($webService, 'GetAvailability'), WebServices::GetResourceAvailability);
@@ -173,20 +175,27 @@ function RegisterUsers(SlimServer $server, SlimWebServiceRegistry $registry)
 
 function RegisterSchedules(SlimServer $server, SlimWebServiceRegistry $registry)
 {
-	$webService = new SchedulesWebService($server, new ScheduleRepository());
+	$webService = new SchedulesWebService($server, new ScheduleRepository(), new PrivacyFilter(new ReservationAuthorization(PluginManager::Instance()->LoadAuthorization())));
 	$category = new SlimWebServiceRegistryCategory('Schedules');
 	$category->AddSecureGet('/', array($webService, 'GetSchedules'), WebServices::AllSchedules);
 	$category->AddSecureGet('/:scheduleId', array($webService, 'GetSchedule'), WebServices::GetSchedule);
+	$category->AddSecureGet('/:scheduleId/Slots', array($webService, 'GetSlots'), WebServices::GetScheduleSlots);
 	$registry->AddCategory($category);
 }
 
 function RegisterAttributes(SlimServer $server, SlimWebServiceRegistry $registry)
 {
 	$webService = new AttributesWebService($server, new AttributeService(new AttributeRepository()));
+	$writeWebService = new AttributesWriteWebService($server, new AttributeSaveController(new AttributeRepository()));
+
 	$category = new SlimWebServiceRegistryCategory('Attributes');
 	$category->AddSecureGet('Category/:categoryId', array($webService, 'GetAttributes'), WebServices::AllCustomAttributes);
 	$category->AddSecureGet('/:attributeId', array($webService, 'GetAttribute'), WebServices::GetCustomAttribute);
+	$category->AddAdminPost('/', array($writeWebService, 'Create'), WebServices::CreateCustomAttribute);
+	$category->AddAdminPost('/:attributeId', array($writeWebService, 'Update'), WebServices::UpdateCustomAttribute);
+	$category->AddAdminDelete('/:attributeId', array($writeWebService, 'Delete'), WebServices::DeleteCustomAttribute);
 	$registry->AddCategory($category);
+
 }
 
 function RegisterGroups(SlimServer $server, SlimWebServiceRegistry $registry)

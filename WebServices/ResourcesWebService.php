@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2012-2014 Nick Korbel
+ * Copyright 2012-2015 Nick Korbel
  *
  * This file is part of Booked Scheduler.
  *
@@ -23,11 +23,12 @@ require_once(ROOT_DIR . 'Domain/Access/namespace.php');
 require_once(ROOT_DIR . 'lib/Application/Attributes/namespace.php');
 require_once(ROOT_DIR . 'WebServices/Responses/ResourceResponse.php');
 require_once(ROOT_DIR . 'WebServices/Responses/ResourcesResponse.php');
-require_once(ROOT_DIR . 'WebServices/Responses/CustomAttributeResponse.php');
+require_once(ROOT_DIR . 'WebServices/Responses/CustomAttributes/CustomAttributeResponse.php');
 require_once(ROOT_DIR . 'WebServices/Responses/Resource/ResourceStatusResponse.php');
 require_once(ROOT_DIR . 'WebServices/Responses/Resource/ResourceStatusReasonsResponse.php');
 require_once(ROOT_DIR . 'WebServices/Responses/Resource/ResourceAvailabilityResponse.php');
 require_once(ROOT_DIR . 'WebServices/Responses/Resource/ResourceReference.php');
+require_once(ROOT_DIR . 'WebServices/Responses/Resource/ResourceTypesResponse.php');
 
 class ResourcesWebService
 {
@@ -129,8 +130,20 @@ class ResourcesWebService
 	}
 
 	/**
+	 * @name GetResourceTypes
+	 * @description Returns all available resource types
+	 * @response ResourceTypesResponse
+	 * @return void
+	 */
+	public function GetTypes()
+	{
+		$types = $this->resourceRepository->GetResourceTypes();
+		$this->server->WriteResponse(new ResourceTypesResponse($this->server, $types));
+	}
+
+	/**
 	 * @name GetAvailability
-	 * @description Returns resource availability for the requested time. "availableAt" and "availableUntil" will include availability through the next 24 hours
+	 * @description Returns resource availability for the requested time. "availableAt" and "availableUntil" will include availability through the next 7 days
 	 * Optional query string parameter: dateTime. If no dateTime is requested the current datetime will be used.
 	 * @response ResourcesAvailabilityResponse
 	 * @return void
@@ -157,8 +170,10 @@ class ResourcesWebService
 			$resources[] = $this->resourceRepository->LoadById($resourceId);
 		}
 
-		$reservations = $this->reservationRepository->GetReservationList($requestedTime->AddDays(-1),
-																		 $requestedTime->AddDays(1),
+		$startDate = $requestedTime->AddDays(-1);
+		$endDate = $requestedTime->AddDays(7);
+		$reservations = $this->reservationRepository->GetReservationList($startDate,
+																		 $endDate,
 																		 null, null, null,
 																		 $resourceId);
 
@@ -191,8 +206,7 @@ class ResourcesWebService
 				/** @var $reservation ReservationItemView */
 				foreach ($resourceReservations as $i => $reservation)
 				{
-					if ($conflict == null && $reservation->BufferedTimes()
-														 ->Overlaps(new DateRange($requestedTime, $requestedTime))
+					if ($conflict == null && $reservation->BufferedTimes()->Contains($requestedTime, false)
 					)
 					{
 						$conflict = $reservation;
@@ -212,7 +226,7 @@ class ResourcesWebService
 				}
 			}
 
-			$resourceAvailability[] = new ResourceAvailabilityResponse($this->server, $resource, $conflict, $nextReservation, $opening);
+			$resourceAvailability[] = new ResourceAvailabilityResponse($this->server, $resource, $conflict, $nextReservation, $opening, $endDate);
 		}
 
 		$this->server->WriteResponse(new ResourcesAvailabilityResponse($this->server, $resourceAvailability));

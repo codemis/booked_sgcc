@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -58,6 +58,8 @@ class Ldap2Wrapper
 			throw new Exception($message);
 		}
 
+		$this->ldap->setOption(LDAP_OPT_REFERRALS, 0);
+		$this->ldap->setOption(LDAP_OPT_PROTOCOL_VERSION, 3);
 		return true;
 	}
 

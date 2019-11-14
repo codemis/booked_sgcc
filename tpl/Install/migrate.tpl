@@ -1,5 +1,5 @@
 {*
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -72,13 +72,14 @@ Done!
 					$.ajax({
 						url: "migrate.php?start=" + elementType,
 						type: "GET",
+						cache: false,
 						success: function (data)
 						{
 							migrated.find('.migratedCount').text(data.MigratedCount);
 							migrated.find('.legacyCount').text(data.LegacyCount);
 							migrated.find('.percentComplete').text(data.PercentComplete);
 							migrated.show();
-							console.log('Migrating data ' + elementType);
+							//console.log('Migrating data ' + elementType);
 							if (data.RemainingCount > 0)
 							{
 								migrateParams.current();

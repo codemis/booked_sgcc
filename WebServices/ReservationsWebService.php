@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -141,6 +141,7 @@ class ReservationsWebService
 	private function GetBaseDate($queryStringKey, $defaultNumberOfDays = 0)
 	{
 		$dateQueryString = $this->server->GetQueryString($queryStringKey);
+
 		if (empty($dateQueryString))
 		{
 			return Date::Now()->AddDays($defaultNumberOfDays);

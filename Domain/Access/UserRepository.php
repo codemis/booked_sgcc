@@ -1,21 +1,21 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
-
-This file is part of Booked Scheduler.
-
-Booked Scheduler is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Booked Scheduler is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright 2011-2015 Nick Korbel
+ *
+ * This file is part of Booked Scheduler.
+ *
+ * Booked Scheduler is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Booked Scheduler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -65,6 +65,105 @@ interface IUserRepository extends IUserViewRepository
 	 * @return void
 	 */
 	function DeleteById($userId);
+}
+
+class UserFilter
+{
+	private $username;
+	private $email;
+	private $firstName;
+	private $lastName;
+	private $phone;
+	private $organization;
+	private $position;
+	private $attributes;
+	/**
+	 * @var array|ISqlFilter[]
+	 */
+	private $_and = array();
+
+
+	public function __construct(
+			$username = null,
+			$email = null,
+			$firstName = null,
+			$lastName = null,
+			$phone = null,
+			$organization = null,
+			$position = null,
+			$attributes = null
+	)
+	{
+		$this->username = $username;
+		$this->email = $email;
+		$this->firstName = $firstName;
+		$this->lastName = $lastName;
+		$this->phone = $phone;
+		$this->organization = $organization;
+		$this->position = $position;
+		$this->attributes = $attributes;
+	}
+
+	/**
+	 * @param ISqlFilter $filter
+	 * @return UserFilter
+	 */
+	public function _And(ISqlFilter $filter)
+	{
+		$this->_and[] = $filter;
+		return $this;
+	}
+
+	public function GetFilter()
+	{
+		$filter = new SqlFilterNull();
+
+		if (!empty($this->username))
+		{
+			$filter->_And(new SqlFilterEquals(ColumnNames::USERNAME, $this->username));
+		}
+		if (!empty($this->email))
+		{
+			$filter->_And(new SqlFilterEquals(ColumnNames::EMAIL, $this->email));
+		}
+		if (!empty($this->firstName))
+		{
+			$filter->_And(new SqlFilterEquals(ColumnNames::FIRST_NAME, $this->firstName));
+		}
+		if (!empty($this->lastName))
+		{
+			$filter->_And(new SqlFilterEquals(ColumnNames::LAST_NAME, $this->lastName));
+		}
+		if (!empty($this->phone))
+		{
+			$filter->_And(new SqlFilterEquals(ColumnNames::PHONE_NUMBER, $this->phone));
+		}
+		if (!empty($this->organization))
+		{
+			$filter->_And(new SqlFilterEquals(ColumnNames::ORGANIZATION, $this->organization));
+		}
+		if (!empty($this->position))
+		{
+			$filter->_And(new SqlFilterEquals(ColumnNames::POSITION, $this->position));
+		}
+
+		if (!empty($this->attributes))
+		{
+			$attributeFilter = AttributeFilter::Create(TableNames::USERS_ALIAS . '.' . ColumnNames::USER_ID, $this->attributes);
+
+			if ($attributeFilter != null)
+			{
+				$filter->_And($attributeFilter);
+			}
+		}
+
+		foreach ($this->_and as $and)
+		{
+			$filter->_And($and);
+		}
+
+		return $filter;
+	}
 }
 
 interface IUserViewRepository
@@ -171,7 +270,8 @@ class UserRepository implements IUserRepository, IAccountActivationRepository
 		while ($row = $reader->GetRow())
 		{
 			$preferences = isset($row[ColumnNames::USER_PREFERENCES]) ? $row[ColumnNames::USER_PREFERENCES] : '';
-			$users[] = new UserDto($row[ColumnNames::USER_ID], $row[ColumnNames::FIRST_NAME], $row[ColumnNames::LAST_NAME], $row[ColumnNames::EMAIL], $row[ColumnNames::TIMEZONE_NAME], $row[ColumnNames::LANGUAGE_CODE], $preferences);
+			$users[] = new UserDto($row[ColumnNames::USER_ID], $row[ColumnNames::FIRST_NAME], $row[ColumnNames::LAST_NAME], $row[ColumnNames::EMAIL],
+								   $row[ColumnNames::TIMEZONE_NAME], $row[ColumnNames::LANGUAGE_CODE], $preferences);
 		}
 
 		return $users;
@@ -189,7 +289,8 @@ class UserRepository implements IUserRepository, IAccountActivationRepository
 
 		if ($row = $reader->GetRow())
 		{
-			return new UserDto($row[ColumnNames::USER_ID], $row[ColumnNames::FIRST_NAME], $row[ColumnNames::LAST_NAME], $row[ColumnNames::EMAIL], $row[ColumnNames::TIMEZONE_NAME], $row[ColumnNames::LANGUAGE_CODE]);
+			return new UserDto($row[ColumnNames::USER_ID], $row[ColumnNames::FIRST_NAME], $row[ColumnNames::LAST_NAME], $row[ColumnNames::EMAIL],
+							   $row[ColumnNames::TIMEZONE_NAME], $row[ColumnNames::LANGUAGE_CODE]);
 		}
 
 		return null;
@@ -297,13 +398,12 @@ class UserRepository implements IUserRepository, IAccountActivationRepository
 		$db = ServiceLocator::GetDatabase();
 		$id = $db->ExecuteInsert(new RegisterUserCommand($user->Username(), $user->EmailAddress(), $user->FirstName(),
 														 $user->LastName(), $user->encryptedPassword, $user->passwordSalt, $user->Timezone(), $user->Language(),
-														 $user->Homepage(), $user->GetAttribute(UserAttribute::Phone), $user->GetAttribute(UserAttribute::Organization),
-														 $user->GetAttribute(UserAttribute::Position), $user->StatusId(), $user->GetPublicId(), $user->GetDefaultScheduleId()));
+														 $user->Homepage(), $user->GetAttribute(UserAttribute::Phone),
+														 $user->GetAttribute(UserAttribute::Organization),
+														 $user->GetAttribute(UserAttribute::Position), $user->StatusId(), $user->GetPublicId(),
+														 $user->GetDefaultScheduleId()));
 
 		$user->WithId($id);
-
-		if(Configuration::Instance()->GetKey(ConfigKeys::REGISTRATION_NOTIFY, new BooleanConverter()))
-			ServiceLocator::GetEmailService()->Send(new AccountCreationEmail($user));
 
 		foreach ($user->GetAddedAttributes() as $added)
 		{
@@ -314,6 +414,15 @@ class UserRepository implements IUserRepository, IAccountActivationRepository
 		foreach ($addedPreferences as $event)
 		{
 			$db->Execute(new AddEmailPreferenceCommand($id, $event->EventCategory(), $event->EventType()));
+		}
+
+		$userGroups = $user->Groups();
+		if (!empty($userGroups))
+		{
+			foreach ($userGroups as $group)
+			{
+				$db->Execute(new AddUserGroupCommand($id, $group->GroupId));
+			}
 		}
 
 		return $id;
@@ -359,7 +468,9 @@ class UserRepository implements IUserRepository, IAccountActivationRepository
 
 		if ($user->HaveAttributesChanged())
 		{
-			$updateAttributesCommand = new UpdateUserAttributesCommand($userId, $user->GetAttribute(UserAttribute::Phone), $user->GetAttribute(UserAttribute::Organization), $user->GetAttribute(UserAttribute::Position));
+			$updateAttributesCommand = new UpdateUserAttributesCommand($userId, $user->GetAttribute(UserAttribute::Phone),
+																	   $user->GetAttribute(UserAttribute::Organization),
+																	   $user->GetAttribute(UserAttribute::Position));
 			$db->Execute($updateAttributesCommand);
 		}
 
@@ -385,14 +496,24 @@ class UserRepository implements IUserRepository, IAccountActivationRepository
 			$db->Execute(new AddAttributeValueCommand($added->AttributeId, $added->Value, $user->Id(), CustomAttributeCategory::USER));
 		}
 
-		foreach($user->GetPreferences()->AddedPreferences() as $added)
+		foreach ($user->GetPreferences()->AddedPreferences() as $added)
 		{
 			$db->Execute(new AddUserPreferenceCommand($user->Id(), $added, $user->GetPreference($added)));
 		}
 
-		foreach($user->GetPreferences()->ChangedPreferences() as $updated)
+		foreach ($user->GetPreferences()->ChangedPreferences() as $updated)
 		{
 			$db->Execute(new UpdateUserPreferenceCommand($user->Id(), $updated, $user->GetPreference($updated)));
+		}
+
+		foreach ($user->GetRemovedGroups() as $removed)
+		{
+			$db->Execute(new DeleteUserGroupCommand($user->Id(), $removed->GroupId));
+		}
+
+		foreach ($user->GetAddedGroups() as $added)
+		{
+			$db->Execute(new AddUserGroupCommand($user->Id(), $added->GroupId));
 		}
 	}
 
@@ -430,7 +551,8 @@ class UserRepository implements IUserRepository, IAccountActivationRepository
 
 		while ($row = $reader->GetRow())
 		{
-			$users[] = new UserDto($row[ColumnNames::USER_ID], $row[ColumnNames::FIRST_NAME], $row[ColumnNames::LAST_NAME], $row[ColumnNames::EMAIL], $row[ColumnNames::TIMEZONE_NAME], $row[ColumnNames::LANGUAGE_CODE]);
+			$users[] = new UserDto($row[ColumnNames::USER_ID], $row[ColumnNames::FIRST_NAME], $row[ColumnNames::LAST_NAME], $row[ColumnNames::EMAIL],
+								   $row[ColumnNames::TIMEZONE_NAME], $row[ColumnNames::LANGUAGE_CODE]);
 		}
 
 		return $users;
@@ -447,7 +569,8 @@ class UserRepository implements IUserRepository, IAccountActivationRepository
 
 		while ($row = $reader->GetRow())
 		{
-			$users[] = new UserDto($row[ColumnNames::USER_ID], $row[ColumnNames::FIRST_NAME], $row[ColumnNames::LAST_NAME], $row[ColumnNames::EMAIL], $row[ColumnNames::TIMEZONE_NAME], $row[ColumnNames::LANGUAGE_CODE]);
+			$users[] = new UserDto($row[ColumnNames::USER_ID], $row[ColumnNames::FIRST_NAME], $row[ColumnNames::LAST_NAME], $row[ColumnNames::EMAIL],
+								   $row[ColumnNames::TIMEZONE_NAME], $row[ColumnNames::LANGUAGE_CODE]);
 		}
 
 		return $users;
@@ -465,7 +588,8 @@ class UserRepository implements IUserRepository, IAccountActivationRepository
 
 		while ($row = $reader->GetRow())
 		{
-			$users[] = new UserDto($row[ColumnNames::USER_ID], $row[ColumnNames::FIRST_NAME], $row[ColumnNames::LAST_NAME], $row[ColumnNames::EMAIL], $row[ColumnNames::TIMEZONE_NAME], $row[ColumnNames::LANGUAGE_CODE]);
+			$users[] = new UserDto($row[ColumnNames::USER_ID], $row[ColumnNames::FIRST_NAME], $row[ColumnNames::LAST_NAME], $row[ColumnNames::EMAIL],
+								   $row[ColumnNames::TIMEZONE_NAME], $row[ColumnNames::LANGUAGE_CODE]);
 		}
 
 		return $users;
@@ -526,7 +650,7 @@ class UserRepository implements IUserRepository, IAccountActivationRepository
 		$reader = ServiceLocator::GetDatabase()->Query($command);
 
 		$preferences = new UserPreferences();
-		while($row = $reader->GetRow())
+		while ($row = $reader->GetRow())
 		{
 			$preferences->Add($row[ColumnNames::PREFERENCE_NAME], $row[ColumnNames::PREFERENCE_VALUE]);
 		}
@@ -535,6 +659,7 @@ class UserRepository implements IUserRepository, IAccountActivationRepository
 
 		return $preferences;
 	}
+
 	/**
 	 * @param $emailAddress string
 	 * @return User
@@ -647,7 +772,7 @@ class UserDto
 		$this->Timezone = $timezone;
 		$this->LanguageCode = $languageCode;
 		$name = new FullName($this->FirstName(), $this->LastName());
-		$this->FullName =  $name->__toString() . " ({$this->EmailAddress})";
+		$this->FullName = $name->__toString() . " ({$this->EmailAddress})";
 		$this->Preferences = UserPreferences::Parse($preferences)->All();
 	}
 
@@ -724,9 +849,18 @@ class UserItemView
 	public $Language;
 	public $ReservationColor;
 	/**
+	 * @var CustomAttributes
+	 */
+	public $Attributes;
+	/**
 	 * @var UserPreferences
 	 */
 	public $Preferences;
+
+	public function __construct()
+	{
+		$this->Attributes = new Customattributes();
+	}
 
 	public function IsActive()
 	{
@@ -751,6 +885,15 @@ class UserItemView
 		$user->Position = $row[ColumnNames::POSITION];
 		$user->Language = $row[ColumnNames::LANGUAGE_CODE];
 
+		if (isset($row[ColumnNames::ATTRIBUTE_LIST]))
+		{
+			$user->Attributes = CustomAttributes::Parse($row[ColumnNames::ATTRIBUTE_LIST]);
+		}
+		else
+		{
+			$user->Attributes = new CustomAttributes();
+		}
+
 		if (isset($row[ColumnNames::USER_PREFERENCES]))
 		{
 			$preferences = UserPreferences::Parse($row[ColumnNames::USER_PREFERENCES]);
@@ -767,6 +910,13 @@ class UserItemView
 
 		return $user;
 	}
-}
 
-?>
+	/**
+	 * @param $attributeId int
+	 * @return null|string
+	 */
+	public function GetAttributeValue($attributeId)
+	{
+		return $this->Attributes->Get($attributeId);
+	}
+}

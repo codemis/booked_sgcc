@@ -30,19 +30,6 @@ function SavedReports(reportOptions) {
 			window.open(url);
 		});
 
-		$(document).on('click', '#btnChart', function(e) {
-			e.preventDefault();
-
-			var chart = new Chart();
-			chart.generate();
-			$('#report-results').hide();
-		});
-
-		$('.cancel').click(function (e) {
-			e.preventDefault();
-			$(this).closest('.dialog').dialog('close');
-		});
-
 		elements.sendEmailButton.click(function (e) {
 			e.preventDefault();
 			var before = function () {

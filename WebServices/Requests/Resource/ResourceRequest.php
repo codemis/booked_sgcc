@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2013-2014 Nick Korbel
+Copyright 2013-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -19,7 +19,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 require_once(ROOT_DIR . 'lib/WebService/JsonRequest.php');
-require_once(ROOT_DIR . 'WebServices/Requests/AttributeValueRequest.php');
+require_once(ROOT_DIR . 'WebServices/Requests/CustomAttributes/AttributeValueRequest.php');
 
 class ResourceRequest extends JsonRequest
 {
@@ -95,6 +95,10 @@ class ResourceRequest extends JsonRequest
 	 * @var int|null
 	 */
 	public $statusReasonId;
+	/**
+	 * @var int|null
+	 */
+	public $resourceTypeId;
 
 	/**
 	 * @return ExampleResourceRequest
@@ -139,7 +143,6 @@ class ExampleResourceRequest extends ResourceRequest
 		$this->sortOrder = 1;
 		$this->statusId = ResourceStatus::AVAILABLE;
 		$this->statusReasonId = 2;
+		$this->resourceTypeId = 1;
 	}
 }
-
-?>

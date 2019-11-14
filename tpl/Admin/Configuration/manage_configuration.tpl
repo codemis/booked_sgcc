@@ -1,5 +1,5 @@
 {*
-Copyright 2013-2014 Nick Korbel
+Copyright 2013-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -39,13 +39,17 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
             <select name="{$name}" class="textbox">
 				{html_options values=$TimezoneValues output=$TimezoneOutput selected=$setting->Value}
             </select>
-			{elseif $setting->Key == ConfigKeys::LANGUAGE}
+		{elseif $setting->Key == ConfigKeys::LANGUAGE}
             <select name="{$name}" class="textbox">
 				{object_html_options options=$Languages key='GetLanguageCode' label='GetDisplayName' selected=$setting->Value|strtolower}
             </select>
-			{elseif $setting->Type == ConfigSettingType::String}
+		{elseif $setting->Key == ConfigKeys::DEFAULT_HOMEPAGE}
+			<select name="{$name}" class="textbox">
+				{html_options values=$HomepageValues output=$HomepageOutput selected=$setting->Value|strtolower}
+			</select>
+		{elseif $setting->Type == ConfigSettingType::String}
             <input type="text" size="50" name="{$name}" value="{$setting->Value|escape}" class="textbox"/>
-			{else}
+		{else}
             <label>{translate key="True"}<input type="radio" value="true" name="{$name}"{if $setting->Value == 'true'}
                                                 checked="checked"{/if} /></label>
             <label>{translate key="False"}<input type="radio" value="false"
@@ -55,7 +59,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 	{/foreach}
 {/function}
 
-<h1>{translate key=ManageConfiguration}</h1>
+<h1>{translate key=ManageConfiguration} {html_image src="question-button.png" id="help-prompt" ref="help-configuration"}</h1>
 
 {if !$IsPageEnabled}
 <div class="warning">
@@ -105,10 +109,13 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 
 </div>
 
+	{csrf_token}
+
 	{jsfile src="admin/edit.js"}
 	{jsfile src="js/jquery.form-3.09.min.js"}
 	{jsfile src="js/jquery.colorbox-min.js"}
 	{jsfile src="admin/configuration.js"}
+	{jsfile src="admin/help.js"}
 
 <script type="text/javascript">
 

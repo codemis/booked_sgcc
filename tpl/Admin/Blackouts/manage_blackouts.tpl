@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -18,7 +18,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
 {include file='globalheader.tpl' cssFiles='scripts/css/colorbox.css,css/admin.css,css/jquery.qtip.min.css,scripts/css/timePicker.css'}
 
-<h1>{translate key=ManageBlackouts}</h1>
+<h1>{translate key=ManageBlackouts} {html_image src="question-button.png" id="help-prompt" ref="help-blackouts"}</h1>
 
 <div class="admin">
 	<div class="title">
@@ -168,6 +168,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 </div>
 
 {html_image src="admin-ajax-indicator.gif" class="indicator" style="display:none;"}
+{csrf_token}
 
 {jsfile src="js/jquery.qtip.min.js"}
 {jsfile src="js/jquery.colorbox-min.js"}
@@ -181,7 +182,9 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {jsfile src="admin/blackouts.js"}
 
 {jsfile src="date-helper.js"}
-{jsfile src="/recurrence.js"}
+{jsfile src="recurrence.js"}
+
+{jsfile src="admin/help.js"}
 
 <script type="text/javascript">
 

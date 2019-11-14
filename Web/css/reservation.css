@@ -185,3 +185,12 @@ label.reservationDate {
 	margin: 15px 0;
 	font-size:smaller;
 }
+
+#allowParticipation {
+	margin-top:5px;
+}
+
+#invite-error {
+	font-weight: bold;
+	color: #CE0000;
+}

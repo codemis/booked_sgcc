@@ -1,12 +1,12 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 Copyright 2012-2014 Trustees of Columbia University in the City of New York
 
-This file is part of Booked SchedulerBooked SchedulereIt is free software: you can redistribute it and/or modify
+This file is part of Booked Scheduler is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
-(at your option) any later versBooked SchedulerduleIt is distributed in the hope that it will be useful,
+(at your option) any later version is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE . See {the
 }
@@ -14,7 +14,7 @@ GNU General Public License for more details .
 
 You should {have
 } received a copy of the GNU General Public License
-alBooked SchedulercheduleIt.  If not, see <http://www.gnu.org/licenses/>.
+along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 //$serverTimezone = ini_get('date.timezone');
@@ -50,7 +50,6 @@ class Date
 	public function __construct($timestring = null, $timezone = null)
 	{
 		$this->InitializeTimezone($timezone);
-
 		$this->date = new DateTime($timestring, new DateTimeZone($this->timezone));
 		$this->timestring = $this->date->format(self::SHORT_FORMAT);
 		$this->timestamp = $this->date->format('U');
@@ -95,7 +94,14 @@ class Date
 		{
 			return NullDate::Instance();
 		}
-		return new Date($dateString, $timezone);
+		try
+		{
+			return new Date($dateString, $timezone);
+		}
+		catch(Exception $ex)
+		{
+			return new NullDate();
+		}
 	}
 
 	/**
@@ -109,14 +115,28 @@ class Date
 			return NullDate::Instance();
 		}
 
-		$date = DateTime::createFromFormat('Y-m-d\TH:i:s+', $dateString);
+		$offset = '';
+		$strLen = strlen($dateString);
+		$hourAdjustment = 0;
+		$minuteAdjustment = 0;
+		if ($strLen > 5)
+		{
+			$offset = substr($dateString, -5);
+			$hourAdjustment = substr($offset, 1, 2);
+			$minuteAdjustment = substr($offset, 3, 2);
+		}
 
-		$timeOffsetString = $date->getTimezone()->getName();
-		$offsetParts = explode(':', $timeOffsetString);
+		if (BookedStringHelper::Contains($offset, '+'))
+		{
+			$hourAdjustment *= -1;
+			$minuteAdjustment *= -1;
+		}
 
-		$d = new Date($date->format(Date::SHORT_FORMAT), 'UTC');
-		$offsetMinutes = ($offsetParts[0] * -60) + $offsetParts[1];
-		return $d->AddMinutes($offsetMinutes);
+		$parsed = date_parse($dateString);
+
+		$d = Date::Create($parsed['year'], $parsed['month'], $parsed['day'], $parsed['hour'] + $hourAdjustment, $parsed['minute'] + $minuteAdjustment, $parsed['second'], 'UTC');
+		
+		return $d;
 	}
 
 	/**
@@ -189,6 +209,11 @@ class Date
 	 */
 	public function ToIso()
 	{
+//		$offset = $this->date->getOffset();
+//		$hours = intval(intval($offset) / 3600);
+//		$minutes  = intval(($offset / 60) % 60);
+//		printf("offset = %d%d", $hours, $minutes);
+//		//die(' off '  .$offset . ' tz ' . $this->date->getTimezone()->getOffset());
 		return $this->Format(DateTime::ISO8601);
 	}
 

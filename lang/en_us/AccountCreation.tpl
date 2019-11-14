@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel, Paul Menchini
+Copyright 2011-2015 Nick Korbel, Paul Menchini
 
 This file is part of Booked Scheduler.
 
@@ -16,8 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
-{include file='..\..\tpl\Email\emailheader.tpl'}
-
 <p>{$To},</p>
 
 <p>A new user has registered with the following information:<br/>
@@ -27,4 +25,6 @@ Phone: {$Phone}<br/>
 Organization: {$Organization}<br/>
 Position: {$Position}</p>
 
-{include file='..\..\tpl\Email\emailfooter.tpl'}
+{if !empty($CreatedBy)}
+	Created by: {$CreatedBy}
+{/if}

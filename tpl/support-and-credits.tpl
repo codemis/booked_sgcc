@@ -1,5 +1,5 @@
 {*
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -47,17 +47,17 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 <p>Boris Vatin (French)</p>
 <p>Dariusz Kliszewski, Grzegorz Bis (Polish)</p>
 <p>Tadafumi Kouzato (Japanese)</p>
-<p> (Dutch)</p>
-<p>Julio Guedimin (Spanish)</p>
+<p>Jonne Olie (Dutch)</p>
+<p>Julio Guedimin, Manuel J. Morgado Morano, Laura Arjona (Spanish)</p>
 <p>Jordi Divins (Catalan)</p>
 <p>Nicola Ruggero, Daniele Cordella, Marco Ponti (Italian)</p>
 <p>Olli Räisänen, Afaf Fafa (Finnish)</p>
 <p>Jakub Baláš, Leoš Jedlička (Czech)</p>
-<p>Maik Standtke (German)</p>
+<p>Maik Standtke, Sven de Vries (German)</p>
 <p>Stephen Höglund (Swedish)</p>
 <p>Vladislav Zhivkov (Bulgarian)</p>
 <p>Bart Verheyde (Flemisch)</p>
-<p>William Oliveira (Portuguese Brazil)</p>
+<p>William Oliveira, Fábio Luiz Barbosa (Portuguese Brazil)</p>
 <p>Yosef Branse (Hebrew)</p>
 <p>Vladislav Zhivkov (Bulgarian)</p>
 <p>Linas Redeckis (Lithuanian)</p>

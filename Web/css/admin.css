@@ -467,7 +467,7 @@ ul.resource-status-reasons {
 	margin-top:4px;
 	font-size:1.1em;
 	font-weight:bold;
-	display:block;
+	display:inline-block;
 }
 
 #bulkUpdateDialog .title {
@@ -478,4 +478,28 @@ ul.resource-status-reasons {
 	background-color:#eee;
 	padding:3px 3px;
 	margin:7px 0;
+}
+
+#helpPopupDiv {
+	max-width:850px;
+	max-height:650px;
+	overflow-y:auto;;
+	display: none;
+	position: absolute;
+	border: solid 2px #212121;
+	background-color: #fff;
+	-moz-box-shadow: 0 0 3px 0 #212121;
+	-webkit-box-shadow: 0 0 3px 0 #212121;
+	box-shadow: 0 0 3px 0 #212121;
+	padding:10px;
+}
+
+#helpPopupDiv p {
+	margin-top: 15px;
+	margin-left:10px;
+}
+
+#helpPopupDiv h3:not(:first-of-type)
+{
+	margin-top:20px;
 }

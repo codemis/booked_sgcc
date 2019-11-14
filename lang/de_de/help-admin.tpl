@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -219,7 +219,8 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 	Booked Scheduler lang directory</p>
 
 <p class="setting"><span>$conf['settings']['script.url']</span>The full public URL to the root of this instance of
-	Booked Scheduler. This should be the Web directory which contains files like bookings.php and calendar.php</p>
+	Booked Scheduler. This should be the Web directory which contains files like bookings.php and calendar.php. If this
+	value starts with //, then the protocol (http vs https) will be automatically detected.</p>
 
 <p class="setting"><span>$conf['settings']['image.upload.directory']</span>The physical directory to store images.
 	This directory will need to be writable (755 suggested). This can be the full directory or relative to the

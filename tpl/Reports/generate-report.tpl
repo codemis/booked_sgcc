@@ -1,5 +1,5 @@
 {*
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -86,45 +86,54 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 				<span class="label">{translate key=FilterBy}</span>
 				<select class="textbox" {formname key=RESOURCE_ID}>
 					<option value="">{translate key=AllResources}</option>
-				{foreach from=$Resources item=resource}
-					<option value="{$resource->GetId()}">{$resource->GetName()}</option>
-				{/foreach}
+					{foreach from=$Resources item=resource}
+						<option value="{$resource->GetId()}">{$resource->GetName()}</option>
+					{/foreach}
 				</select>
 				<select class="textbox" {formname key=ACCESSORY_ID} id="accessoryId">
 					<option value="">{translate key=AllAccessories}</option>
-				{foreach from=$Accessories item=accessory}
-					<option value="{$accessory->Id}">{$accessory->Name}</option>
-				{/foreach}
+					{foreach from=$Accessories item=accessory}
+						<option value="{$accessory->Id}">{$accessory->Name}</option>
+					{/foreach}
 				</select>
 				<select class="textbox" {formname key=SCHEDULE_ID}>
 					<option value="">{translate key=AllSchedules}</option>
-				{foreach from=$Schedules item=schedule}
-					<option value="{$schedule->GetId()}">{$schedule->GetName()}</option>
-				{/foreach}
+					{foreach from=$Schedules item=schedule}
+						<option value="{$schedule->GetId()}">{$schedule->GetName()}</option>
+					{/foreach}
 				</select>
 
 				<select class="textbox" {formname key=GROUP_ID}>
 					<option value="">{translate key=AllGroups}</option>
-				{foreach from=$Groups item=group}
-					<option value="{$group->Id}">{$group->Name}</option>
-				{/foreach}
+					{foreach from=$Groups item=group}
+						<option value="{$group->Id}">{$group->Name}</option>
+					{/foreach}
 				</select>
 
 				<div id="user-filter-div" class="link-filter">
 					<a href="#" class="all">{translate key=AllUsers}</a>
 					<a href="#" class="selected filter-off"></a>
 					<input id="user-filter" type="text" class="textbox filter-input filter-off"/>
-				{html_image src="minus-gray.png" class="clear filter-off"}
+					{html_image src="minus-gray.png" class="clear-filter filter-off"}
 					<input id="user_id" class="filter-id" type="hidden" {formname key=USER_ID}/>
+				</div>
+
+				<div id="participant-filter-div" class="link-filter">
+					<a href="#" class="all">{translate key=AllParticipants}</a>
+					<a href="#" class="selected filter-off"></a>
+					<input id="participant-filter" type="text" class="textbox filter-input filter-off"/>
+					{html_image src="minus-gray.png" class="clear-filter filter-off"}
+					<input id="participant_id" class="filter-id" type="hidden" {formname key=PARTICIPANT_ID}/>
 				</div>
 			</div>
 		</div>
 		<input type="submit" value="{translate key=GetReport}" class="button" id="btnCustomReport" asyncAction=""/>
+		{csrf_token}
 	</form>
 </fieldset>
 
 <div id="saveMessage" class="success" style="display:none">
-{translate key=ReportSaved} <a href="{$Path}reports/{Pages::REPORTS_SAVED}">{translate key=MySavedReports}</a>
+	{translate key=ReportSaved} <a href="{$Path}reports/{Pages::REPORTS_SAVED}">{translate key=MySavedReports}</a>
 </div>
 
 <div id="resultsDiv">
@@ -136,11 +145,11 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {include file="Reports/chart.tpl"}
 
 <div class="dialog" id="userPopup">
-{translate key=User}<a href="#" id="browseUser">Browse</a>
+	{translate key=User}<a href="#" id="browseUser">Browse</a>
 </div>
 
 <div class="dialog" id="groupPopup">
-{translate key=Group}<input id="group_filter" type="text" class="textbox"/>
+	{translate key=Group}<input id="group_filter" type="text" class="textbox"/>
 </div>
 
 
@@ -160,21 +169,30 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {jsfile src="autocomplete.js"}
 {jsfile src="ajax-helpers.js"}
 {jsfile src="reports/generate-reports.js"}
+{jsfile src="reports/common.js"}
 {jsfile src="reports/chart.js"}
 
 <script type="text/javascript">
 	$(document).ready(function () {
 		var reportOptions = {
-			userAutocompleteUrl:"{$Path}ajax/autocomplete.php?type={AutoCompleteType::User}",
-			groupAutocompleteUrl:"{$Path}ajax/autocomplete.php?type={AutoCompleteType::Group}",
-			customReportUrl:"{$smarty.server.SCRIPT_NAME}?{QueryStringKeys::ACTION}={ReportActions::Generate}",
-			printUrl:"{$smarty.server.SCRIPT_NAME}?{QueryStringKeys::ACTION}={ReportActions::PrintReport}&",
-			csvUrl:"{$smarty.server.SCRIPT_NAME}?{QueryStringKeys::ACTION}={ReportActions::Csv}&",
-			saveUrl:"{$smarty.server.SCRIPT_NAME}?{QueryStringKeys::ACTION}={ReportActions::Save}"
+			userAutocompleteUrl: "{$Path}ajax/autocomplete.php?type={AutoCompleteType::User}",
+			groupAutocompleteUrl: "{$Path}ajax/autocomplete.php?type={AutoCompleteType::Group}",
+			customReportUrl: "{$smarty.server.SCRIPT_NAME}?{QueryStringKeys::ACTION}={ReportActions::Generate}",
+			printUrl: "{$smarty.server.SCRIPT_NAME}?{QueryStringKeys::ACTION}={ReportActions::PrintReport}&",
+			printMaintenanceUrl: "{$smarty.server.SCRIPT_NAME}?{QueryStringKeys::ACTION}={ReportActions::PrintMaintenanceReport}&",
+			csvUrl: "{$smarty.server.SCRIPT_NAME}?{QueryStringKeys::ACTION}={ReportActions::Csv}&",
+			saveUrl: "{$smarty.server.SCRIPT_NAME}?{QueryStringKeys::ACTION}={ReportActions::Save}"
 		};
 
 		var reports = new GenerateReports(reportOptions);
 		reports.init();
+
+		var common = new ReportsCommon(
+				{
+					scriptUrl: '{$ScriptUrl}'
+				}
+		);
+		common.init();
 	});
 </script>
 

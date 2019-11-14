@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -18,7 +18,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
 {include file='globalheader.tpl' cssFiles='css/admin.css,scripts/css/colorpicker.css'}
 
-<h1>{translate key=ManageUsers}</h1>
+<h1>{translate key=ManageUsers} {html_image src="question-button.png" id="help-prompt" ref="help-users"}</h1>
 
 <div style="padding: 10px 0px;">
 	<table>
@@ -90,40 +90,41 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 			{/if}
 			<td align="center"><a href="#" class="update delete">{html_image src="cross-button.png"}</a></td>
 		</tr>
-		{assign var=attributes value=$AttributeList->GetAttributes($id)}
+		{assign var=attributes value=$AttributeList}
 		{if $attributes|count > 0}
 			<tr>
 				<td class="id"><input type="hidden" class="id" value="{$id}"/></td>
-				<td colspan="16" class="{$rowCss} customAttributes" userId="{$id}">
-						<form method="post" class="attributesForm" ajaxAction="{ManageUsersActions::ChangeAttributes}">
-							<h3>{translate key=AdditionalAttributes} <a href="#"
-																		class="update changeAttributes">{translate key=Edit}</a>
-							</h3>
+				<td colspan="17" class="{$rowCss} customAttributes" userId="{$id}">
+					<form method="post" class="attributesForm" ajaxAction="{ManageUsersActions::ChangeAttributes}">
+						<h3>{translate key=AdditionalAttributes}
+							<a href="#" class="update changeAttributes">{translate key=Edit}</a>
+						</h3>
 
-							<div class="validationSummary">
-								<ul>
-								</ul>
-								<div class="clear">&nbsp;</div>
-							</div>
+						<div class="validationSummary">
+							<ul>
+							</ul>
+							<div class="clear">&nbsp;</div>
+						</div>
 
-							<div>
-								<ul>
-									{foreach from=$attributes item=attribute}
-										<li class="customAttribute" attributeId="{$attribute->Id()}">
-											<div class="attribute-readonly">{control type="AttributeControl" attribute=$attribute readonly=true}</div>
-											<div class="attribute-readwrite hidden">{control type="AttributeControl" attribute=$attribute}
-										</li>
-									{/foreach}
-								</ul>
-							</div>
+						<div>
+							<ul>
+								{foreach from=$attributes item=attribute}
+									{assign var="attributeValue" value=$user->GetAttributeValue($attribute->Id())}
+									<li class="customAttribute" attributeId="{$attribute->Id()}">
+										<div class="attribute-readonly">{control type="AttributeControl" attribute=$attribute value=$attributeValue readonly=true}</div>
+										<div class="attribute-readwrite hidden">{control type="AttributeControl" attribute=$attribute value=$attributeValue}
+									</li>
+								{/foreach}
+							</ul>
+						</div>
 
-							<div class="attribute-readwrite hidden clear" style="height:auto;">
-								<button type="button"
-										class="button save">{html_image src="tick-circle.png"} {translate key='Update'}</button>
-								<button type="button"
-										class="button cancel">{html_image src="slash.png"} {translate key='Cancel'}</button>
-							</div>
-						</form>
+						<div class="attribute-readwrite hidden" style="height:auto;">
+							<button type="button"
+									class="button save">{html_image src="tick-circle.png"} {translate key='Update'}</button>
+							<button type="button"
+									class="button cancel">{html_image src="slash.png"} {translate key='Cancel'}</button>
+						</div>
+					</form>
 				</td>
 			</tr>
 		{/if}
@@ -137,12 +138,14 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		{translate key=AddUser}
 	</div>
 	<div>
-		<ul>
-			{async_validator id="addUserEmailformat" key="ValidEmailRequired"}
-			{async_validator id="addUserUniqueemail" key="UniqueEmailRequired"}
-			{async_validator id="addUserUsername" key="UniqueUsernameRequired"}
-			{async_validator id="addAttributeValidator" key=""}
-		</ul>
+		<div class="validationSummary">
+			<ul>
+				{async_validator id="addUserEmailformat" key="ValidEmailRequired"}
+				{async_validator id="addUserUniqueemail" key="UniqueEmailRequired"}
+				{async_validator id="addUserUsername" key="UniqueUsernameRequired"}
+				{async_validator id="addAttributeValidator" key=""}
+			</ul>
+		</div>
 		<form id="addUserForm" method="post" ajaxAction="{ManageUsersActions::AddUser}">
 			<div style="display: table-row">
 				<div style="display: table-cell;">
@@ -202,7 +205,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 
 			<div class="customAttributes">
 				<ul>
-					{assign var=attributes value=$AttributeList->GetAttributes()}
+					{assign var=attributes value=$AttributeList}
 					{foreach from=$attributes item=attribute}
 						<li class="customAttribute">
 							{control type="AttributeControl" attribute=$attribute algin=vertical}
@@ -218,6 +221,42 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 				<button type="button" class="button clearform">{html_image src="slash.png"} {translate key='Cancel'}</button>
 			</div>
 		</form>
+	</div>
+</div>
+
+<div class="admin" style="margin-top:30px">
+	<div class="title">
+		{translate key=Import}
+	</div>
+
+	<div>
+		<div class="validationSummary">
+			<ul>
+				{async_validator id="fileExtensionValidator" key=""}
+				{async_validator id="importUsersValidator" key=""}
+			</ul>
+		</div>
+		<div id="importErrors" class="error hidden"></div>
+		<div id="importResult" class="hidden">
+			<span>{translate key=RowsImported}</span>
+
+			<div id="importCount" class="inline bold"></div>
+			<span>{translate key=RowsSkipped}</span>
+
+			<div id="importSkipped" class="inline bold"></div>
+			<a href="{$smarty.server.SCRIPT_NAME}">{translate key=Done}</a>
+		</div>
+		<form id="importUsersForm" method="post" enctype="multipart/form-data" ajaxAction="{ManageUsersActions::ImportUsers}">
+			<input type="file" {formname key=USER_IMPORT_FILE} />
+
+			<div class="admin-update-buttons">
+				<button type="button" class="button save">{html_image src="table-import.png"} {translate key=Import}</button>
+			</div>
+		</form>
+	</div>
+	<div>
+		<span class="note">{translate key=UserImportInstructions}</span>
+		<a href="{$smarty.server.SCRIPT_NAME}?dr=template" target="_blank">{translate key=GetTemplate}</a>
 	</div>
 </div>
 
@@ -252,11 +291,14 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 
 <div id="userDialog" class="dialog" title="{translate key=Update}">
 	<form id="userForm" method="post" ajaxAction="{ManageUsersActions::UpdateUser}">
-		<ul>
-			{async_validator id="emailformat" key="ValidEmailRequired"}
-			{async_validator id="uniqueemail" key="UniqueEmailRequired"}
-			{async_validator id="uniqueusername" key="UniqueUsernameRequired"}
-		</ul>
+
+		<div class="validationSummary">
+			<ul>
+				{async_validator id="emailformat" key="ValidEmailRequired"}
+				{async_validator id="uniqueemail" key="UniqueEmailRequired"}
+				{async_validator id="uniqueusername" key="UniqueUsernameRequired"}
+			</ul>
+		</div>
 
 		<ul>
 			<li>{translate key="Username"}</li>
@@ -318,6 +360,16 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 
 	<div id="removedGroups">
 	</div>
+
+	<form id="addGroupForm" method="post" ajaxAction="addUser">
+		<input type="hidden" id="addGroupId" {formname key=GROUP_ID} />
+		<input type="hidden" id="addGroupUserId" {formname key=USER_ID} />
+	</form>
+
+	<form id="removeGroupForm" method="post" ajaxAction="removeUser">
+		<input type="hidden" id="removeGroupId" {formname key=GROUP_ID} />
+		<input type="hidden" id="removeGroupUserId" {formname key=USER_ID} />
+	</form>
 </div>
 
 <div id="colorDialog" class="dialog" title="{translate key=Color}">
@@ -330,6 +382,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 	</form>
 </div>
 
+{csrf_token}
 {html_image src="admin-ajax-indicator.gif" class="indicator" style="display:none;"}
 
 {jsfile src="admin/edit.js"}
@@ -337,10 +390,10 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {jsfile src="admin/user.js"}
 {jsfile src="js/jquery.form-3.09.min.js"}
 {jsfile src="js/colorpicker.js"}
+{jsfile src="admin/help.js"}
 
 <script type="text/javascript">
-	$(document).ready(function ()
-	{
+	$(document).ready(function () {
 		var actions = {
 			activate: '{ManageUsersActions::Activate}',
 			deactivate: '{ManageUsersActions::Deactivate}'
@@ -380,13 +433,13 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		{/foreach}
 
 		$('#reservationColor').ColorPicker({
-			onSubmit: function(hsb, hex, rgb, el) {
+			onSubmit: function (hsb, hex, rgb, el) {
 				$(el).val(hex);
-					$(el).ColorPickerHide();
-				},
-				onBeforeShow: function () {
-					$(this).ColorPickerSetColor(this.value);
-				}
+				$(el).ColorPickerHide();
+			},
+			onBeforeShow: function () {
+				$(this).ColorPickerSetColor(this.value);
+			}
 		});
 
 	});

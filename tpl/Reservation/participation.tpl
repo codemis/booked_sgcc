@@ -1,5 +1,5 @@
 {*
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -19,7 +19,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 <div id="reservationParticipation">
 	<ul class="no-style">
 		<li>
-			<label>{translate key="ParticipantList"}<br/>
+			<label for="participantAutocomplete">{translate key="ParticipantList"}</label><br/>
 				{translate key=Add} <input type="text" id="participantAutocomplete" class="input" style="width:250px;"/>
 				or
 				<button id="promptForParticipants" type="button" class="button" style="display:inline">
@@ -30,7 +30,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 					<img src="img/users.png"/>
 				{translate key='Groups'}
 				</button>
-			</label>
+
 
 			<div id="participantList">
 				<ul></ul>
@@ -59,4 +59,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 			<div id="inviteeGroupDialog" title="{translate key=InviteOthers}" class="dialog"></div>
 		</li>
 	</ul>
+	<div id="allowParticipation">
+		<input type="checkbox" {if $AllowParticipantsToJoin}checked="checked"{/if} {formname key=ALLOW_PARTICIPATION} id="allowParticipationCheckbox"><label for="allowParticipationCheckbox">{translate key=AllowParticipantsToJoin}</label>
+	</div>
 </div>

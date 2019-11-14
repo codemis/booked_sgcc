@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -99,7 +99,7 @@ class ReservationRepository implements IReservationRepository
 		{
 			Log::Debug('Updating existing series (seriesId: %s)', $reservationSeries->SeriesId());
 
-			$updateSeries = new UpdateReservationSeriesCommand($reservationSeries->SeriesId(), $reservationSeries->Title(), $reservationSeries->Description(), $reservationSeries->RepeatOptions()->RepeatType(), $reservationSeries->RepeatOptions()->ConfigurationString(), Date::Now(), $reservationSeries->StatusId(), $reservationSeries->UserId());
+			$updateSeries = new UpdateReservationSeriesCommand($reservationSeries->SeriesId(), $reservationSeries->Title(), $reservationSeries->Description(), $reservationSeries->RepeatOptions()->RepeatType(), $reservationSeries->RepeatOptions()->ConfigurationString(), Date::Now(), $reservationSeries->StatusId(), $reservationSeries->UserId(), $reservationSeries->GetAllowParticipation());
 
 			$database->Execute($updateSeries);
 
@@ -120,7 +120,7 @@ class ReservationRepository implements IReservationRepository
 	{
 		$database = ServiceLocator::GetDatabase();
 
-		$insertReservationSeries = new AddReservationSeriesCommand(Date::Now(), $reservationSeries->Title(), $reservationSeries->Description(), $reservationSeries->RepeatOptions()->RepeatType(), $reservationSeries->RepeatOptions()->ConfigurationString(), ReservationTypes::Reservation, $reservationSeries->StatusId(), $reservationSeries->UserId());
+		$insertReservationSeries = new AddReservationSeriesCommand(Date::Now(), $reservationSeries->Title(), $reservationSeries->Description(), $reservationSeries->RepeatOptions()->RepeatType(), $reservationSeries->RepeatOptions()->ConfigurationString(), ReservationTypes::Reservation, $reservationSeries->StatusId(), $reservationSeries->UserId(), $reservationSeries->GetAllowParticipation());
 
 		$reservationSeriesId = $database->ExecuteInsert($insertReservationSeries);
 
@@ -228,6 +228,7 @@ class ReservationRepository implements IReservationRepository
 			$series->WithDescription($description);
 			$series->WithOwner($row[ColumnNames::RESERVATION_OWNER]);
 			$series->WithStatus($row[ColumnNames::RESERVATION_STATUS]);
+			$series->AllowParticipation($row[ColumnNames::RESERVATION_ALLOW_PARTICIPATION]);
 
 			$startDate = Date::FromDatabase($row[ColumnNames::RESERVATION_START]);
 			$endDate = Date::FromDatabase($row[ColumnNames::RESERVATION_END]);
@@ -373,7 +374,8 @@ class ReservationRepository implements IReservationRepository
 		{
 			$fileId = $row[ColumnNames::FILE_ID];
 			$extension = $row[ColumnNames::FILE_EXTENSION];
-			$contents = ServiceLocator::GetFileSystem()->GetFileContents(Paths::ReservationAttachments() . "$fileId.$extension");
+			$fileSystem = ServiceLocator::GetFileSystem();
+			$contents = $fileSystem->GetFileContents($fileSystem->GetReservationAttachmentsPath() . "$fileId.$extension");
 			$attachment = ReservationAttachment::Create($row[ColumnNames::FILE_NAME],
 														$row[ColumnNames::FILE_TYPE],
 														$row[ColumnNames::FILE_SIZE],
@@ -399,7 +401,8 @@ class ReservationRepository implements IReservationRepository
 		$extension = $attachmentFile->FileExtension();
 		$attachmentFile->WithFileId($id);
 
-		ServiceLocator::GetFileSystem()->Add(Paths::ReservationAttachments(), "$id.$extension",
+		$fileSystem = ServiceLocator::GetFileSystem();
+		$fileSystem->Add($fileSystem->GetReservationAttachmentsPath(), "$id.$extension",
 											 $attachmentFile->FileContents());
 
 		return $id;
@@ -734,7 +737,8 @@ class AttachmentRemovedCommand extends EventCommand
 	public function Execute(Database $database)
 	{
 		$database->Execute(new RemoveReservationAttachmentCommand($this->event->FileId()));
-		ServiceLocator::GetFileSystem()->RemoveFile(Paths::ReservationAttachments() . $this->event->FileName());
+		$fileSystem = ServiceLocator::GetFileSystem();
+		$fileSystem->RemoveFile($fileSystem->GetReservationAttachmentsPath() . $this->event->FileName());
 	}
 }
 

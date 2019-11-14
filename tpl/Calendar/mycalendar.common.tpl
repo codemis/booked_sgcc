@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -37,6 +37,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {jsfile src="calendar.js"}
 {jsfile src="js/fullcalendar.min.js"}
 {jsfile src="admin/edit.js"}
+{jsfile src="js/tree.jquery.js"}
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -45,7 +46,7 @@ $(document).ready(function() {
 	{foreach from=$Calendar->Reservations() item=reservation}
 		reservations.push({
 			id: '{$reservation->ReferenceNumber}',
-			title: '{$reservation->ResourceName|escape:javascript} {$reservation->Title|escape:javascript}',
+			title: '{$reservation->DisplayTitle|escape:javascript}',
 			start: '{format_date date=$reservation->StartDate key=fullcalendar}',
 			end: '{format_date date=$reservation->EndDate key=fullcalendar}',
 			url: 'reservation.php?rn={$reservation->ReferenceNumber}',
@@ -68,12 +69,13 @@ $(document).ready(function() {
 					monthNamesShort: {js_array array=$MonthNamesShort},
 					timeFormat: '{$TimeFormat}',
 					dayMonth: '{$DateFormat}',
-					firstDay: 0,
+					firstDay: {$FirstDay},
 					subscriptionEnableUrl: '{Pages::MY_CALENDAR}?{QueryStringKeys::ACTION}={PersonalCalendarActions::ActionEnableSubscription}',
 					subscriptionDisableUrl: '{Pages::MY_CALENDAR}?{QueryStringKeys::ACTION}={PersonalCalendarActions::ActionDisableSubscription}'
 				};
 
 	var calendar = new Calendar(options, reservations);
 	calendar.init();
+	calendar.bindResourceGroups({$ResourceGroupsAsJson}, {$SelectedGroupNode|default:0});
 });
 </script>

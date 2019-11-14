@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -114,6 +114,8 @@ class ReservationUpdatePresenter implements IReservationUpdatePresenter
 		$existingSeries->ChangeInvitees($this->page->GetInvitees());
 		$existingSeries->ChangeAccessories($this->GetAccessories());
 		$existingSeries->ChangeAttributes($this->GetAttributes());
+
+		$existingSeries->AllowParticipation($this->page->GetAllowParticipation());
 
 		$attachments = $this->page->GetAttachments();
 		foreach ($attachments as $attachment)

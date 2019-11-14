@@ -1,5 +1,5 @@
 {*
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -18,7 +18,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 *}
 {include file='globalheader.tpl' cssFiles='css/admin.css'}
 
-<h1>{translate key=ManageSchedules}</h1>
+<h1>{translate key=ManageSchedules} {html_image src="question-button.png" id="help-prompt" ref="help-schedules"}</h1>
 
 <div class="admin">
     <div class="title">
@@ -125,6 +125,8 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
     </div>
 {/foreach}
 </div>
+
+{pagination pageInfo=$PageInfo}
 
 <div class="admin" style="margin-top:30px">
     <div class="title">
@@ -293,7 +295,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
         <div style="margin-top:2px;">
             <h5>
 			{capture name="layoutConfig" assign="layoutConfig"}
-                <input type='text' value='30' id='quickLayoutConfig' size=5' />
+                <input type='text' value='30' id='quickLayoutConfig' size='5' />
 			{/capture}
 			{capture name="layoutStart" assign="layoutStart"}
                 <input type='text' value='08:00' id='quickLayoutStart' size='10'/>
@@ -336,11 +338,12 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
     </form>
 </div>
 
-
+{csrf_token}
 {html_image src="admin-ajax-indicator.gif" class="indicator" style="display:none;"}
 {jsfile src="admin/edit.js"}
 {jsfile src="admin/schedule.js"}
 {jsfile src="js/jquery.form-3.09.min.js"}
+{jsfile src="admin/help.js"}
 
 <script type="text/javascript">
 

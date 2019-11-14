@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2012-2014 Nick Korbel
+Copyright 2012-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -105,6 +105,7 @@ class ColumnNames
 	const RESERVATION_STATUS = 'status_id';
 	const SERIES_ID = 'series_id';
 	const RESERVATION_OWNER = 'owner_id';
+	const RESERVATION_ALLOW_PARTICIPATION = 'allow_participation';
 
 	// RESERVATION_INSTANCE //
 	const RESERVATION_INSTANCE_ID = 'reservation_instance_id';
@@ -245,6 +246,12 @@ class ColumnNames
 	const PARTICIPANT_LIST = 'participant_list';
 	const INVITEE_LIST = 'invitee_list';
 	const ATTRIBUTE_LIST = 'attribute_list';
+	const RESOURCE_ATTRIBUTE_LIST = 'resource_attribute_list';
+	const RESOURCE_TYPE_ATTRIBUTE_LIST = 'resource_type_attribute_list';
+	const USER_ATTRIBUTE_LIST = 'user_attribute_list';
+	const GROUP_LIST = 'owner_group_list';
+	const START_REMINDER_MINUTES_PRIOR = 'start_reminder_minutes';
+	const END_REMINDER_MINUTES_PRIOR = 'end_reminder_minutes';
 
 	// shared
 	const ALLOW_CALENDAR_SUBSCRIPTION = 'allow_calendar_subscription';

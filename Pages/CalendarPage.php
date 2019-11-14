@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -19,7 +19,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 require_once(ROOT_DIR . 'Pages/SecurePage.php');
-require_once(ROOT_DIR . 'Presenters/CalendarPresenter.php');
+require_once(ROOT_DIR . 'Presenters/Calendar/CalendarPresenter.php');
 
 
 interface ICalendarPage extends IPage
@@ -57,6 +57,11 @@ interface ICalendarPage extends IPage
 	public function GetResourceId();
 
 	/**
+	 * @return null|int
+	 */
+	public function GetGroupId();
+
+	/**
 	 * @param $scheduleId null|int
 	 * @return void
 	 */
@@ -77,6 +82,11 @@ interface ICalendarPage extends IPage
 	 * @param int $firstDay
 	 */
 	public function SetFirstDay($firstDay);
+
+	/**
+	 * @param ResourceGroup $selectedGroup
+	 */
+	public function BindSelectedGroup($selectedGroup);
 }
 
 class CalendarPage extends SecurePage implements ICalendarPage
@@ -179,6 +189,7 @@ class CalendarPage extends SecurePage implements ICalendarPage
 	{
 		$this->Set('filters', $filters);
 		$this->Set('IsAccessible', !$filters->IsEmpty());
+		$this->Set('ResourceGroupsAsJson', json_encode($filters->GetResourceGroupTree()->GetGroups(false)));;
 	}
 
 	public function GetScheduleId()
@@ -189,6 +200,11 @@ class CalendarPage extends SecurePage implements ICalendarPage
 	public function GetResourceId()
 	{
 		return $this->GetQuerystring(QueryStringKeys::RESOURCE_ID);
+	}
+
+	public function GetGroupId()
+	{
+		return $this->GetQuerystring(QueryStringKeys::GROUP_ID);
 	}
 
 	/**
@@ -225,6 +241,15 @@ class CalendarPage extends SecurePage implements ICalendarPage
 	public function SetFirstDay($firstDay)
 	{
 		$this->Set('FirstDay', $firstDay == Schedule::Today ? 0 : $firstDay);
+	}
+
+	/**
+	 * @param ResourceGroup $selectedGroup
+	 */
+	public function BindSelectedGroup($selectedGroup)
+	{
+		$this->Set('GroupName', $selectedGroup->name);
+		$this->Set('SelectedGroupNode', $selectedGroup->id);
 	}
 }
 
@@ -265,5 +290,3 @@ class CalendarUrl
 		return $this->url;
 	}
 }
-
-?>

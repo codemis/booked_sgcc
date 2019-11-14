@@ -1,17 +1,17 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
-This file is part of Booked SchedulerBooked SchedulereIt is free software: you can redistribute it and/or modify
+This file is part of Booked Scheduler is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
-(at your option) any later versBooked SchedulerduleIt is distributed in the hope that it will be useful,
+(at your option) any later version is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-alBooked SchedulercheduleIt.  If not, see <http://www.gnu.org/licenses/>.
+along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -78,7 +78,7 @@ class SmartyPage extends Smarty
 			$resources = Resources::GetInstance();
 		}
 
-		$this->Resources = & $resources;
+		$this->Resources = &$resources;
 		$this->RootPath = $rootPath;
 
 		$this->AddTemplateDirectory($base . 'lang/' . $this->Resources->CurrentLanguage);
@@ -168,6 +168,8 @@ class SmartyPage extends Smarty
 		$this->registerPlugin('function', 'flush', array($this, 'Flush'));
 		$this->registerPlugin('function', 'jsfile', array($this, 'IncludeJavascriptFile'));
 		$this->registerPlugin('function', 'cssfile', array($this, 'IncludeCssFile'));
+		$this->registerPlugin('function', 'read_only_attribute', array($this, 'ReadOnlyAttribute'));
+		$this->registerPlugin('function', 'csrf_token', array($this, 'CSRFToken'));
 
 		/**
 		 * PageValidators
@@ -260,13 +262,15 @@ class SmartyPage extends Smarty
 
 	public function FormatDate($params, &$smarty)
 	{
-		if (!isset($params['date']))
+		if (!isset($params['date']) || empty($params['date']))
 		{
 			return '';
 		}
 
+		$date = is_string($params['date']) ? Date::Parse($params['date']) : $params['date'];
+
 		/** @var $date Date */
-		$date = isset($params['timezone']) ? $params['date']->ToTimezone($params['timezone']) : $params['date'];
+		$date = isset($params['timezone']) ? $date->ToTimezone($params['timezone']) : $date;
 
 		if (isset($params['format']))
 		{
@@ -484,15 +488,64 @@ class SmartyPage extends Smarty
 		return 'name=\'' . FormKeys::Evaluate($params['key']) . $append . '\'';
 	}
 
-	public function CreateUrl($var)
+	public function CreateUrl($url)
 	{
-		$string = preg_replace("/([^\w\/])(www\.[a-z0-9\-]+\.[a-z0-9\-]+)/i", "$1http://$2", $var);
-		$string = preg_replace("/([\w]+:\/\/[\w-?&;#~=\.\/\@]+[\w\/])/i", "<a target=\"_blank\" href=\"$1\">$1</A>",
-							   $string);
-		$string = preg_replace("/([\w-?&;#~=\.\/]+\@(\[?)[a-zA-Z0-9\-\.]+\.([a-zA-Z]{2,3}|[0-9]{1,3})(\]?))/i",
-							   "<A HREF=\"mailto:$1\">$1</A>", $string);
+		// credit to WordPress wp-includes/formatting.php
+		$make_url_clickable = function($matches) {
+			$ret = '';
+			$url = $matches[2];
 
-		return $string;
+			if ( empty($url) )
+				return $matches[0];
+			// removed trailing [.,;:] from URL
+			if ( in_array(substr($url, -1), array('.', ',', ';', ':')) === true ) {
+				$ret = substr($url, -1);
+				$url = substr($url, 0, strlen($url)-1);
+			}
+
+			$text = $url;
+			if (strlen($text) > 30)
+			{
+				$text = substr($text, 0, 30) . '...';
+			}
+
+			return $matches[1] . "<a href=\"$url\" target=\"_blank\" rel=\"nofollow\">$text</a>" . $ret;
+		};
+
+		$make_web_ftp_clickable_cb = function ($matches) {
+			$ret = '';
+			$dest = $matches[2];
+			$dest = 'http://' . $dest;
+
+			if ( empty($dest) )
+				return $matches[0];
+			// removed trailing [,;:] from URL
+			if ( in_array(substr($dest, -1), array('.', ',', ';', ':')) === true ) {
+				$ret = substr($dest, -1);
+				$dest = substr($dest, 0, strlen($dest)-1);
+			}
+
+			$text = $dest;
+			if (strlen($text) > 30)
+			{
+				$text = substr($text, 0, 30) . '...';
+			}
+
+			return $matches[1] . "<a href=\"$dest\" rel=\"nofollow\">$text</a>" . $ret;
+		};
+
+		$make_email_clickable_cb = function ($matches) {
+			$email = $matches[2] . '@' . $matches[3];
+			return $matches[1] . "<a href=\"mailto:$email\">$email</a>";
+		};
+
+		$url = ' ' . $url;
+		$url = preg_replace_callback('#([\s>])([\w]+?://[\w\\x80-\\xff\#$%&~/.\-;:=,?@\[\]+]*)#is', $make_url_clickable, $url);
+		$url = preg_replace_callback('#([\s>])((www|ftp)\.[\w\\x80-\\xff\#$%&~/.\-;:=,?@\[\]+]*)#is', $make_web_ftp_clickable_cb, $url);
+		$url = preg_replace_callback('#([\s>])([.0-9a-z_+-]+)@(([0-9a-z-]+\.)+[0-9a-z]{2,})#i', $make_email_clickable_cb, $url);
+		$url = preg_replace("#(<a( [^>]+?>|>))<a [^>]+?>([^>]+?)</a></a>#i", "$1$3</a>", $url);
+		$url = trim($url);
+		return $url;
 	}
 
 	public function CreatePagination($params, &$smarty)
@@ -645,6 +698,7 @@ class SmartyPage extends Smarty
 		$versionNumber = Configuration::VERSION;
 		echo "<script type=\"text/javascript\" src=\"{$this->RootPath}scripts/{$params['src']}?v=$versionNumber\"></script>";
 	}
+
 	public function IncludeCssFile($params, &$smarty)
 	{
 		$versionNumber = Configuration::VERSION;
@@ -654,5 +708,31 @@ class SmartyPage extends Smarty
 			$src = "css/{$src}";
 		}
 		echo "<link rel='stylesheet' type='text/css' href='{$this->RootPath}{$src}?v=$versionNumber'></link>";
+	}
+
+	public function ReadOnlyAttribute($params, &$smarty)
+	{
+		$attrVal = $params['value'];
+		$attribute = $params['attribute'];
+		if ($attribute->Type() == CustomAttributeTypes::CHECKBOX)
+		{
+			if ($attrVal == 1)
+			{
+				echo Resources::GetInstance()->GetString('Yes');
+			}
+			else
+			{
+				echo Resources::GetInstance()->GetString('No');
+			}
+		}
+		else
+		{
+			echo $attrVal;
+		}
+	}
+
+	public function CSRFToken($params, &$smarty)
+	{
+		echo '<input type="hidden" id="csrf_token" name="' . FormKeys::CSRF_TOKEN . '" value="' . ServiceLocator::GetServer()->GetUserSession()->CSRFToken . '"/>';
 	}
 }

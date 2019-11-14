@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 Copyright 2012-2014, Moritz Schepp, IST Austria
 Copyright 2012-2014, Alois Schloegl, IST Austria
 
@@ -104,7 +104,7 @@ class Queries
 	const ADD_RESERVATION_SERIES =
 			'INSERT INTO
         reservation_series (date_created, title, description, allow_participation, allow_anon_participation, repeat_type, repeat_options, type_id, status_id, owner_id)
-		VALUES (@dateCreated, @title, @description, false, false, @repeatType, @repeatOptions, @typeid, @statusid, @userid)';
+		VALUES (@dateCreated, @title, @description, @allow_participation, false, @repeatType, @repeatOptions, @typeid, @statusid, @userid)';
 
 	const ADD_RESERVATION_USER =
 			'INSERT INTO reservation_users (reservation_instance_id, user_id, reservation_user_level)
@@ -353,12 +353,14 @@ class Queries
 
 	const GET_ALL_SAVED_REPORTS = 'SELECT * FROM saved_reports WHERE user_id = @userid ORDER BY report_name, date_created';
 
-	const GET_ALL_SCHEDULES = 'SELECT * FROM schedules s INNER JOIN layouts l ON s.layout_id = l.layout_id ORDER BY s.name';
+	const GET_ALL_SCHEDULES = 'SELECT s.*, l.timezone FROM schedules s INNER JOIN layouts l ON s.layout_id = l.layout_id ORDER BY s.name';
 
 	const GET_ALL_USERS_BY_STATUS =
 			'SELECT u.*,
 			(SELECT GROUP_CONCAT(CONCAT(p.name, "=", p.value) SEPARATOR ",")
-						FROM user_preferences p WHERE u.user_id = p.user_id) as preferences
+						FROM user_preferences p WHERE u.user_id = p.user_id) as preferences,
+			(SELECT GROUP_CONCAT(CONCAT(cav.custom_attribute_id, \'=\', cav.attribute_value) SEPARATOR "!sep!")
+						FROM custom_attribute_values cav WHERE cav.entity_id = u.user_id AND cav.attribute_category = 2) as attribute_list
 			FROM users u
 			WHERE (0 = @user_statusid OR status_id = @user_statusid) ORDER BY lname, fname';
 
@@ -368,7 +370,7 @@ class Queries
 			CASE
 			WHEN a.attribute_category = 2 THEN CONCAT(u.fname, " ", u.lname)
 			WHEN a.attribute_category = 4 THEN r.name
-			WHEN a.attribute_category = 4 THEN rt.resource_type_name
+			WHEN a.attribute_category = 5 THEN rt.resource_type_name
 			ELSE null
 			END as entity_description
 			FROM custom_attributes a
@@ -462,7 +464,7 @@ class Queries
 	const GET_REMINDER_NOTICES = 'SELECT DISTINCT
 		rs.*,
 		ri.*,
-		u.*,
+		u.fname, u.lname, u.language, u.timezone,
 		r.name as resource_name
 		FROM reservation_instances ri
 		INNER JOIN reservation_series rs ON ri.series_id = rs.series_id
@@ -556,6 +558,8 @@ const GET_RESERVATION_LIST_TEMPLATE =
 			INNER JOIN reservation_resources rr ON rs.series_id = rr.series_id
 			INNER JOIN resources ON rr.resource_id = resources.resource_id
 			INNER JOIN schedules ON resources.schedule_id = schedules.schedule_id
+			LEFT JOIN reservation_reminders start_reminder ON start_reminder.series_id = rs.series_id AND start_reminder.reminder_type = 0
+			LEFT JOIN reservation_reminders end_reminder ON end_reminder.series_id = rs.series_id AND end_reminder.reminder_type = 1
 			[JOIN_TOKEN]
 			WHERE rs.status_id <> 2
 			[AND_TOKEN]
@@ -681,6 +685,17 @@ const GET_RESERVATION_LIST_TEMPLATE =
 		WHERE
 			ug.user_id = @userid AND ug.group_id = grp.group_id AND grp.resource_id = r.resource_id';
 
+	const GET_USER_ADMIN_GROUP_RESOURCE_PERMISSIONS =
+			'SELECT r.resource_id, r.name FROM resources r
+		WHERE r.schedule_id IN (SELECT s.schedule_id FROM schedules s
+			INNER JOIN groups g ON g.group_id = s.admin_group_id
+			INNER JOIN user_groups ug on ug.group_id = g.group_id
+			WHERE ug.user_id = @userid)
+		OR r.resource_id IN (SELECT r2.resource_id FROM resources r2
+			INNER JOIN groups g ON g.group_id = r2.admin_group_id
+			INNER JOIN user_groups ug on ug.group_id = g.group_id
+			WHERE ug.user_id = @userid)';
+
 	const GET_USER_PREFERENCE = 'SELECT value FROM user_preferences WHERE user_id = @userid AND name = @name';
 
 	const GET_USER_PREFERENCES = 'SELECT name, value FROM user_preferences WHERE user_id = @userid';
@@ -698,6 +713,20 @@ const GET_RESERVATION_LIST_TEMPLATE =
 	const GET_USER_SESSION_BY_SESSION_TOKEN = 'SELECT * FROM user_session WHERE session_token = @session_token';
 
 	const GET_USER_SESSION_BY_USERID = 'SELECT * FROM user_session WHERE user_id = @userid';
+
+	const GET_RESOURCE_GROUP_PERMISSION = 'SELECT
+				g.*
+			FROM
+				group_resource_permissions grp, resources r, groups g
+			WHERE
+				r.resource_id = @resourceid AND r.resource_id = grp.resource_id AND g.group_id = grp.group_id';
+
+	const GET_RESOURCE_USER_PERMISSION = 'SELECT
+				u.*
+			FROM
+				user_resource_permissions urp, resources r, users u
+			WHERE
+				r.resource_id = @resourceid AND r.resource_id = urp.resource_id AND u.user_id = urp.user_id';
 
 	const MIGRATE_PASSWORD =
 			'UPDATE
@@ -843,7 +872,8 @@ const GET_RESERVATION_LIST_TEMPLATE =
 			repeat_type = @repeatType,
 			repeat_options = @repeatOptions,
 			status_id = @statusid,
-			owner_id = @userid
+			owner_id = @userid,
+			allow_participation = @allow_participation
 		WHERE
 			series_id = @seriesid';
 
@@ -968,14 +998,18 @@ class QueryBuilder
 					(ri.end_date >= @startDate AND ri.end_date <= @endDate) OR
 					(ri.start_date <= @startDate AND ri.end_date >= @endDate))';
 
-	public static $SELECT_LIST_FRAGMENT = 'ri.*, rs.date_created as date_created, rs.last_modified as last_modified, rs.description as description, rs.status_id as status_id, rs.title,
-					owner.fname as owner_fname, owner.lname as owner_lname, owner.user_id as owner_id, owner.phone as owner_phone, owner.position as owner_position, owner.organization as owner_organization,
+	public static $SELECT_LIST_FRAGMENT = 'ri.*, rs.date_created as date_created, rs.last_modified as last_modified, rs.description as description, rs.status_id as status_id, rs.title, rs.repeat_type, rs.repeat_options,
+					owner.fname as owner_fname, owner.lname as owner_lname, owner.user_id as owner_id, owner.phone as owner_phone, owner.position as owner_position, owner.organization as owner_organization, owner.email as email,
 					resources.name, resources.resource_id, resources.schedule_id, resources.status_id as resource_status_id, resources.resource_status_reason_id, resources.buffer_time, ru.reservation_user_level,
-					(SELECT GROUP_CONCAT(participants.user_id)
-						FROM reservation_users participants WHERE participants.reservation_instance_id = ri.reservation_instance_id AND participants.reservation_user_level = 2) as participant_list,
+					start_reminder.minutes_prior AS start_reminder_minutes, end_reminder.minutes_prior AS end_reminder_minutes,
+					(SELECT GROUP_CONCAT(groups.group_id)
+											FROM user_groups groups WHERE owner.user_id = groups.user_id) as owner_group_list,
 
-					(SELECT GROUP_CONCAT(invitees.user_id)
-						FROM reservation_users invitees WHERE invitees.reservation_instance_id = ri.reservation_instance_id AND invitees.reservation_user_level = 3) as invitee_list,
+					(SELECT GROUP_CONCAT(CONCAT(participants.user_id,\'=\', CONCAT(participant_users.fname, " ", participant_users.lname)) SEPARATOR "!sep!")
+						FROM reservation_users participants INNER JOIN users participant_users ON participant_users.user_id = participants.user_id WHERE participants.reservation_instance_id = ri.reservation_instance_id AND participants.reservation_user_level = 2) as participant_list,
+
+					(SELECT GROUP_CONCAT(CONCAT(invitees.user_id,\'=\', CONCAT(invitee_users.fname, " ", invitee_users.lname)) SEPARATOR "!sep!")
+						FROM reservation_users invitees INNER JOIN users invitee_users ON invitee_users.user_id = invitees.user_id WHERE invitees.reservation_instance_id = ri.reservation_instance_id AND invitees.reservation_user_level = 3) as invitee_list,
 
 					(SELECT GROUP_CONCAT(CONCAT(cav.custom_attribute_id,\'=\', cav.attribute_value) SEPARATOR "!sep!")
 						FROM custom_attribute_values cav WHERE cav.entity_id = ri.series_id AND cav.attribute_category = 1) as attribute_list,

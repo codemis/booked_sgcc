@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
+Copyright 2011-2015 Nick Korbel
 
 This file is part of Booked Scheduler.
 
@@ -31,7 +31,13 @@ interface IPasswordPage extends IPage
 	public function ResettingPassword();
 
 	public function ShowResetPasswordSuccess($resetPasswordSuccess);
+
+	/**
+	 * @param IAuthenticationActionOptions $authenticationOptions
+	 */
+	public function SetAllowedActions($authenticationOptions);
 }
+
 class PasswordPage extends SecurePage implements IPasswordPage
 {
 	/**
@@ -76,5 +82,13 @@ class PasswordPage extends SecurePage implements IPasswordPage
 	public function ShowResetPasswordSuccess($resetPasswordSuccess)
 	{
 		$this->Set('ResetPasswordSuccess', $resetPasswordSuccess);
+	}
+
+	/**
+	 * @param IAuthenticationActionOptions $authenticationOptions
+	 */
+	public function SetAllowedActions($authenticationOptions)
+	{
+		$this->Set('AllowPasswordChange', $authenticationOptions->AllowPasswordChange());
 	}
 }

@@ -1,22 +1,22 @@
 <?php
 /**
-Copyright 2011-2014 Nick Korbel
-
-This file is part of Booked Scheduler.
-
-Booked Scheduler is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Booked Scheduler is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright 2011-2015 Nick Korbel
+ *
+ * This file is part of Booked Scheduler.
+ *
+ * Booked Scheduler is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Booked Scheduler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 require_once(ROOT_DIR . 'lib/Common/Helpers/StopWatch.php');
@@ -37,7 +37,7 @@ interface IAttributeService
 	 * @param $entityId int|null
 	 * @return AttributeServiceValidationResult
 	 */
-	public function Validate($category, $attributeValues, $entityId=null);
+	public function Validate($category, $attributeValues, $entityId = null);
 
 	/**
 	 * @abstract
@@ -52,6 +52,14 @@ interface IAttributeService
 	 * @return CustomAttribute
 	 */
 	public function GetById($attributeId);
+
+	/**
+	 * @param UserSession $userSession
+	 * @param ReservationView $reservationView
+	 * @param int $requestedUserId
+	 * @return Attribute[]
+	 */
+	public function GetReservationAttributes(UserSession $userSession, ReservationView $reservationView, $requestedUserId = 0);
 }
 
 class AttributeService implements IAttributeService
@@ -61,14 +69,32 @@ class AttributeService implements IAttributeService
 	 */
 	private $attributeRepository;
 
+	/**
+	 * @var IAuthorizationService
+	 */
+	private $authorizationService;
+
 	public function __construct(IAttributeRepository $attributeRepository)
 	{
 		$this->attributeRepository = $attributeRepository;
 	}
 
+	/**
+	 * @return IAuthorizationService
+	 */
+	public function GetAuthorizationService()
+	{
+		if ($this->authorizationService == null)
+		{
+			$this->authorizationService = new AuthorizationService(new UserRepository());
+		}
+
+		return $this->authorizationService;
+	}
+
 	public function GetAttributes($category, $entityIds = array())
 	{
-		if (!is_array($entityIds)&& !empty($entityIds))
+		if (!is_array($entityIds) && !empty($entityIds))
 		{
 			$entityIds = array($entityIds);
 		}
@@ -150,6 +176,33 @@ class AttributeService implements IAttributeService
 	public function GetById($attributeId)
 	{
 		return $this->attributeRepository->LoadById($attributeId);
+	}
+
+	public function GetReservationAttributes(UserSession $userSession, ReservationView $reservationView, $requestedUserId = 0)
+	{
+		if ($requestedUserId == 0)
+		{
+			$requestedUserId = $reservationView->OwnerId;
+		}
+
+		$attributes = array();
+		$customAttributes = $this->GetByCategory(CustomAttributeCategory::RESERVATION);
+		foreach ($customAttributes as $attribute)
+		{
+//			$secondaryCategory = $attribute->SecondaryCategory();
+
+			if ($this->CanReserveFor($userSession, $requestedUserId))
+			{
+				$attributes[] = new Attribute($attribute, $reservationView->GetAttributeValue($attribute->Id()));
+			}
+		}
+
+		return $attributes;
+	}
+
+	private function CanReserveFor(UserSession $userSession, $requestedUserId)
+	{
+		return $userSession->UserId == $requestedUserId || $this->GetAuthorizationService()->CanReserveFor($userSession, $requestedUserId);
 	}
 }
 
